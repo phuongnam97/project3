@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 import javax.sql.DataSource;
 
@@ -46,6 +47,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.headers().frameOptions().disable();
         http.authorizeRequests()
+                .antMatchers("/resources/**").permitAll()
                 .antMatchers("/", "/users/register", "/logout").permitAll()
                 .antMatchers("/userInfo").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
                 .antMatchers("/admin").access("hasRole('ROLE_ADMIN')")
@@ -58,7 +60,6 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                 .tokenRepository(this.persistentTokenRepository())
                 .tokenValiditySeconds(1 * 24 * 60 * 60);
 //                .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler);
-
     }
 
     @Bean
