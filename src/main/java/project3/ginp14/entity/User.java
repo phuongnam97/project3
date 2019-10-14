@@ -2,6 +2,9 @@ package project3.ginp14.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -9,10 +12,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name="users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -54,6 +60,10 @@ public class User {
     @Size(max = 11,message = "Phone number must be less than 11 digits")
     private String telephone;
 
+    @OneToOne
+    @JoinColumn(name="role_id")
+    private Role role;
+
     @Column(name = "status")
     private int status;
 
@@ -65,7 +75,7 @@ public class User {
     @UpdateTimestamp
     private Timestamp updated_at;
 
-    public User(@NotBlank(message = "This field cannot be blank") String username, @NotBlank(message = "This field cannot be blank") @Size(min = 5, message = "Password is too short") String password, @NotBlank(message = "This field cannot be blank") String fullname, @NotNull(message = "Please select gender") int gender, String address, @NotBlank(message = "This field cannot be blank") @Email(message = "This is not a valid email") String email, String DOB, @NotBlank(message = "This field cannot be blank") @Size(max = 11, message = "Phone number must be less than 11 digits") String telephone) {
+    public User(@NotBlank(message = "This field cannot be blank") String username, @NotBlank(message = "This field cannot be blank") @Size(min = 5, message = "Password is too short") String password, @NotBlank(message = "This field cannot be blank") String fullname, @NotNull(message = "Please select gender") int gender, String address, @NotBlank(message = "This field cannot be blank") @Email(message = "This is not a valid email") String email, String DOB, @NotBlank(message = "This field cannot be blank") @Size(max = 11, message = "Phone number must be less than 11 digits") String telephone, Role role) {
         this.username = username;
         this.password = password;
         this.fullname = fullname;
@@ -74,6 +84,12 @@ public class User {
         this.email = email;
         this.DOB = DOB;
         this.telephone = telephone;
+        this.role = role;
+    }
+
+    public User(@NotBlank(message = "This field cannot be blank") String username, @NotBlank(message = "This field cannot be blank") @Size(min = 5, message = "Password is too short") String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public User() {
@@ -91,8 +107,35 @@ public class User {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(role.getName()));
+        return authorities;
     }
 
     public String getPassword() {
@@ -149,6 +192,14 @@ public class User {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public int getStatus() {

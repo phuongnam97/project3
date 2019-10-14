@@ -14,23 +14,17 @@
     <div class="card-body">
         <h4 class="card-title mb-4">Basic Forms</h4>
         <div class="basic-form">
-            <form>
+            <form th:object="${user}" th:action="@{/login}" method="post">
                 <div class="form-group">
-                    <label class="text-label">Email Address*</label>
-                    <input type="email" name="email" class="form-control" placeholder="skinner@support.com" required="">
+                    <label class="text-label">Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="Username" required="">
                 </div>
                 <div class="form-group">
                     <label class="text-label">Password*</label>
-                    <input type="password" name="password" class="form-control" placeholder="************" required="">
+                    <input type="password" name="password" class="form-control" placeholder="Password" required="">
                 </div>
-                <div class="form-group">
-                    <div class="form-check">
-                        <input id="checkbox1" class="form-check-input styled-checkbox" type="checkbox">
-                        <label for="checkbox1" class="form-check-label">Check Me Out</label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-form mr-2">Submit</button>
-                <button type="button" class="btn btn-light text-dark btn-form">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-form mr-2">Login</button>
+                <label>If you are new, click <a href="/users/register">here</a> to register</label>
             </form>
         </div>
     </div>

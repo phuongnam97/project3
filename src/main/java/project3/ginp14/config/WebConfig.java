@@ -12,6 +12,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import project3.ginp14.service.UserServiceImpl;
 
 import javax.sql.DataSource;
 
@@ -20,6 +21,9 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
 
 //    @Autowired
 //    private AccessDeniedHandler accessDeniedHandler;
+
+    @Autowired
+    private UserServiceImpl userServiceImpl;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -31,14 +35,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication().dataSource(dataSource)
-                .usersByUsernameQuery("select username, password, true from users where username=?")
-                .authoritiesByUsernameQuery("select u.username, r.name " +
-                        "from users_roles ur " +
-                        "inner join users u on (u.id = ur.user_id) " +
-                        "inner join roles r on (r.id = ur.role_id)" +
-                        "where username=?")
-                .passwordEncoder(bCryptPasswordEncoder()).rolePrefix("ROLE_");
+        auth.userDetailsService(userServiceImpl).passwordEncoder(bCryptPasswordEncoder());
     }
 
     @Override
@@ -47,7 +44,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.headers().frameOptions().disable();
         http.authorizeRequests()
-                .antMatchers("/resources/**").permitAll()
+                .antMatchers("/static/admin/**").permitAll()
                 .antMatchers("/", "/users/register", "/logout").permitAll()
                 .antMatchers("/userInfo").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
                 .antMatchers("/admin").access("hasRole('ROLE_ADMIN')")
