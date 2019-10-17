@@ -8,7 +8,7 @@ public class HomepageController {
     @GetMapping("/")
     public String showHomepage(){
 
-        return "views/homepage";
+        return "views/admin/fragments/master_layout.html";
     }
 
 }

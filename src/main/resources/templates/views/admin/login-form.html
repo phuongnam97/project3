@@ -14,7 +14,7 @@
     <div class="card-body">
         <h4 class="card-title mb-4">Basic Forms</h4>
         <div class="basic-form">
-            <form th:object="${user}" th:action="@{/login}" method="post">
+            <form th:action="@{/login}" method="post">
                 <div class="form-group">
                     <label class="text-label">Username</label>
                     <input type="text" name="username" class="form-control" placeholder="Username" required="">

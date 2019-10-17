@@ -44,16 +44,18 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.headers().frameOptions().disable();
         http.authorizeRequests()
-                .antMatchers("/static/admin/**").permitAll()
-                .antMatchers("/", "/users/register", "/logout").permitAll()
-                .antMatchers("/userInfo").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-                .antMatchers("/admin").access("hasRole('ROLE_ADMIN')")
-                .and().formLogin().loginPage("/users/register")
-                .failureUrl("/users/register?error=true")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/")
-                .and().logout().logoutSuccessUrl("/")
-                .and().rememberMe()
+                    .antMatchers("/static/admin/**").permitAll()
+                    .antMatchers("/", "/users/register", "/logout").permitAll()
+                    .antMatchers("/admin").access("hasRole('Role_Admin')")
+                        .and()
+                    .formLogin().loginPage("/users/register")
+                    .failureUrl("/users/login?error=true")
+                    .loginProcessingUrl("/login")
+                    .defaultSuccessUrl("/")
+                        .and()
+                    .logout().logoutSuccessUrl("/")
+                        .and()
+                .rememberMe()
                 .tokenRepository(this.persistentTokenRepository())
                 .tokenValiditySeconds(1 * 24 * 60 * 60);
 //                .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler);
