@@ -6,7 +6,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import project3.ginp14.entity.RestaurantType;
+import project3.ginp14.entity.User;
 import project3.ginp14.service.RestaurantTypeService;
+import project3.ginp14.service.UserService;
 
 import java.util.List;
 
@@ -16,6 +18,10 @@ public class AdminController {
     @Autowired
     RestaurantTypeService restaurantTypeService;
 
+    @Autowired
+    UserService userService;
+
+    // Restaurant type
     @GetMapping("/restaurant_type")
     public String showListRestaurantType(Model model){
         List<RestaurantType> listObj = restaurantTypeService.findAll();
@@ -82,7 +88,52 @@ public class AdminController {
             model.addAttribute("message", message);
             model.addAttribute("isSuccess", true);
         } catch (Exception e){
-            String message = "Edit failed !!!";
+            String message = "Delete failed !!!";
+            model.addAttribute("message", message);
+            model.addAttribute("isSuccess", false);
+        }
+        return "redirect:";
+    }
+
+
+
+    // User Management
+    @GetMapping("/users")
+    public String showListUsers(Model model){
+        List<User> listObj = userService.findAll();
+        if (listObj.isEmpty()){
+            model.addAttribute("isEmpty",true);
+        } else {
+            model.addAttribute("isEmpty",false);
+        }
+        model.addAttribute("listObj", listObj);
+        return "views/admin/users/list_users";
+    }
+
+    @GetMapping("/users/block")
+    public String blockUser(@RequestParam int id, Model model){
+        try {
+            userService.blockUser(id);
+            String message = "Block user successfull !!!";
+            model.addAttribute("message", message);
+            model.addAttribute("isSuccess", true);
+        } catch (Exception e){
+            String message = "Block user failed !!!";
+            model.addAttribute("message", message);
+            model.addAttribute("isSuccess", false);
+        }
+        return "redirect:";
+    }
+
+    @GetMapping("/users/unblock")
+    public String unblockUser(@RequestParam int id, Model model){
+        try {
+            userService.unblockUser(id);
+            String message = "Unblock user successfull !!!";
+            model.addAttribute("message", message);
+            model.addAttribute("isSuccess", true);
+        } catch (Exception e){
+            String message = "Unblock user failed !!!";
             model.addAttribute("message", message);
             model.addAttribute("isSuccess", false);
         }

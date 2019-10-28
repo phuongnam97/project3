@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import project3.ginp14.dao.UserDao;
 import project3.ginp14.entity.User;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -27,14 +29,21 @@ public class UserServiceImpl implements UserService {
         User user = userDao.findByUsernameAndEmailAndTelephone(username, email, telephone);
         if (user == null){
             return false;
+        } else {
+            return true;
         }
-        return true;
     }
 
     @Override
     public void save(User user) {
         user.setPassword(bCryptPasswordEncoder().encode(user.getPassword()));
+        System.out.println(user.getPassword());
         userDao.save(user);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userDao.findAll();
     }
 
     @Override
@@ -42,5 +51,23 @@ public class UserServiceImpl implements UserService {
         User user = userDao.findByUsername(username);
         if (user == null){ throw new UsernameNotFoundException("Username not found");}
         return user;
+    }
+
+    @Override
+    public void blockUser(int id){
+        User user = userDao.findById(id);
+        if (user != null){
+            user.setStatus(2);
+            userDao.save(user);
+        }
+    }
+
+    @Override
+    public void unblockUser(int id){
+        User user = userDao.findById(id);
+        if (user != null){
+            user.setStatus(1);
+            userDao.save(user);
+        }
     }
 }

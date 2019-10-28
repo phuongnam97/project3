@@ -37,6 +37,7 @@ public class UserController {
 
     @PostMapping("/process-register")
     public String processRegister(@ModelAttribute("user") User user, BindingResult bindingResult, Model model){
+        System.out.println("abcd");
         if(userService.checkExistInfo(user.getUsername(), user.getEmail(), user.getTelephone())) {
             System.out.println("Existed User have that username, email or telephone");
             return "redirect:register";
