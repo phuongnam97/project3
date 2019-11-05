@@ -2,6 +2,7 @@ package project3.ginp14.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="restaurants")
@@ -20,12 +21,12 @@ public class Restaurant {
     private String description;
 
     @Column(name = "average_price_min")
-    @NotBlank(message = "This field cannot be blank")
-    private long averagePriceMin;
+    @NotNull(message = "This field cannot be blank")
+    private int averagePriceMin;
 
     @Column(name = "average_price_max")
-    @NotBlank(message = "This field cannot be blank")
-    private long averagePriceMax;
+    @NotNull(message = "This field cannot be blank")
+    private int averagePriceMax;
 
     @Column(name = "images")
     private String images;
@@ -36,14 +37,24 @@ public class Restaurant {
     @Column(name="address")
     private String address;
 
+    @Column(name="number_of_seat")
+    private int numberOfSeat;
+
+    @Column(name="no_of_seat_left")
+    private int numberOfSeatLeft;
+
     @OneToOne
     @JoinColumn(name="restaurant_type_id")
     private RestaurantType restaurantType;
 
+    @OneToOne
+    @JoinColumn(name="user_id")
+    private User user;
+
     public Restaurant() {
     }
 
-    public Restaurant(@NotBlank(message = "This field cannot be blank") String name, @NotBlank(message = "This field cannot be blank") String description, @NotBlank(message = "This field cannot be blank") long averagePriceMin, @NotBlank(message = "This field cannot be blank") long averagePriceMax, String images, String telephone, String address, RestaurantType restaurantType) {
+    public Restaurant(@NotBlank(message = "This field cannot be blank") String name, @NotBlank(message = "This field cannot be blank") String description, @NotBlank(message = "This field cannot be blank") int averagePriceMin, @NotBlank(message = "This field cannot be blank") int averagePriceMax, String images, String telephone, String address, int numberOfSeat, int numberOfSeatLeft, RestaurantType restaurantType) {
         this.name = name;
         this.description = description;
         this.averagePriceMin = averagePriceMin;
@@ -51,7 +62,23 @@ public class Restaurant {
         this.images = images;
         this.telephone = telephone;
         this.address = address;
+        this.numberOfSeat = numberOfSeat;
+        this.numberOfSeatLeft = numberOfSeatLeft;
         this.restaurantType = restaurantType;
+    }
+
+    public Restaurant(@NotBlank(message = "This field cannot be blank") String name, @NotBlank(message = "This field cannot be blank") String description, @NotBlank(message = "This field cannot be blank") int averagePriceMin, @NotBlank(message = "This field cannot be blank") int averagePriceMax, String images, String telephone, String address, int numberOfSeat, int numberOfSeatLeft, RestaurantType restaurantType, User user) {
+        this.name = name;
+        this.description = description;
+        this.averagePriceMin = averagePriceMin;
+        this.averagePriceMax = averagePriceMax;
+        this.images = images;
+        this.telephone = telephone;
+        this.address = address;
+        this.numberOfSeat = numberOfSeat;
+        this.numberOfSeatLeft = numberOfSeatLeft;
+        this.restaurantType = restaurantType;
+        this.user = user;
     }
 
     public int getId() {
@@ -78,19 +105,19 @@ public class Restaurant {
         this.description = description;
     }
 
-    public long getAveragePriceMin() {
+    public int getAveragePriceMin() {
         return averagePriceMin;
     }
 
-    public void setAveragePriceMin(long averagePriceMin) {
+    public void setAveragePriceMin(int averagePriceMin) {
         this.averagePriceMin = averagePriceMin;
     }
 
-    public long getAveragePriceMax() {
+    public int getAveragePriceMax() {
         return averagePriceMax;
     }
 
-    public void setAveragePriceMax(long averagePriceMax) {
+    public void setAveragePriceMax(int averagePriceMax) {
         this.averagePriceMax = averagePriceMax;
     }
 
@@ -124,5 +151,29 @@ public class Restaurant {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public int getNumberOfSeat() {
+        return numberOfSeat;
+    }
+
+    public void setNumberOfSeat(int numberOfSeat) {
+        this.numberOfSeat = numberOfSeat;
+    }
+
+    public int getNumberOfSeatLeft() {
+        return numberOfSeatLeft;
+    }
+
+    public void setNumberOfSeatLeft(int numberOfSeatLeft) {
+        this.numberOfSeatLeft = numberOfSeatLeft;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

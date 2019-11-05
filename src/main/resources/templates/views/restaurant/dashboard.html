@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{views/admin/fragments/master_layout}">
+      layout:decorate="~{views/restaurant/fragments/master_layout}">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
+<div layout:fragment="userFullname"><a href="#" th:text="${userFullName}" class="d-block"></a></div>
 <div class="div-content" layout:fragment="content">
     <section class="content-header">
         <div class="container-fluid">
@@ -28,22 +29,7 @@
                 <section class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <form role="form" action="#" th:action="@{/admin/restaurant_type/edit}" method="post" th:object="${obj}">
-                                <input type="text" th:value="${obj.id}" th:field="*{id}" hidden>
-                                <div class="form-group">
-                                    <label for="restaurent_type_name">Restaurant Type Name</label>
-                                    <input type="text" class="form-control" id="restaurent_type_name" placeholder="Enter restaurant type name" th:value="${obj.name}" th:field="*{name}">
-                                </div>
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea class="form-control" rows="3" placeholder="Enter ..." th:value="${obj.description}" th:field="*{description}"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Image</label>
-                                    <input type="text" class="form-control" rows="3" placeholder="Enter ..." th:value="${obj.image}" th:field="*{image}">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </form>
+
                         </div>
                     </div>
                 </section>

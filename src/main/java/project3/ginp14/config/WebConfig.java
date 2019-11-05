@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -35,8 +37,8 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    @Autowired
+    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userServiceImpl).passwordEncoder(bCryptPasswordEncoder());
     }
 
@@ -47,25 +49,20 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
         //http.headers().frameOptions().disable();
         http.authorizeRequests()
                 .antMatchers("/static/admin/**").permitAll()
-                .antMatchers("/", "/users/register", "/logout").permitAll()
-                .antMatchers("/admin").access("hasRole('Role_Admin')")
+                .antMatchers("/home", "/users/register", "/logout").permitAll()
                 // cho phép all admin
                 .antMatchers("/admin/**").permitAll()
                 // cho phép all user
                 .antMatchers("/users/**").permitAll()
-                .anyRequest().authenticated()
+                // cho phép all restaurant
+                .antMatchers("/restaurant","/restaurant/**").permitAll()
+                .anyRequest().hasRole("Role_User")
                 .and()
-                .formLogin().loginPage("/users/login").permitAll()
+            .formLogin()
+                .loginPage("/users/login").permitAll()
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/")
-                .failureUrl("/users/login?error=true")
-                .and()
-                .logout().logoutSuccessUrl("/");
-        //.and()
-        //.rememberMe()
-        //.tokenRepository(this.persistentTokenRepository())
-        //.tokenValiditySeconds(1 * 24 * 60 * 60);
-//                .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler);
+                .defaultSuccessUrl("/home")
+                .failureUrl("/users/login?error=true");
     }
 
     @Bean
@@ -78,4 +75,12 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/resources/**");
     }
+
+//    public AuthenticationSuccessHandler loginSuccessHandler() {
+//        return (request, response, exception) -> response.sendRedirect("/");
+//    }
+//
+//    public AuthenticationFailureHandler loginFailureHandler() {
+//        return (request, response, exception) -> response.sendRedirect("/users/login?error=true");
+//    }
 }

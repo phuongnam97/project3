@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{views/restaurant/fragments/master_layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="userFullname"><a href="#" th:text="${userFullName}" class="d-block"></a></div>
+<div class="div-content" layout:fragment="content">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Create New Restaurant Type</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Create Form Restaurant Location</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <section class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form role="form" action="#" th:action="@{/restaurant/booking/create}" method="post" th:object="${obj}">
+                                <div class="form-group">
+                                    <label for="guest_name">Guest Name</label>
+                                    <input type="text" class="form-control" id="guest_name" placeholder="Enter Guest Name" th:field="*{guestName}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="guest_telephone">Guest Telephone</label>
+                                    <input type="text" class="form-control" id="guest_telephone" placeholder="Enter Guest Name" th:field="*{guestTelephone}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="person_no">Number of Person</label>
+                                    <input type="number" class="form-control" id="person_no" th:field="*{quantity}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="booking_detail">Detail</label>
+                                    <textarea class="form-control" id="booking_detail" rows="3" placeholder="Enter ..." th:field="*{bookingDetail}"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Booking's Time</label>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class='col-sm-6'>
+                                                <input type='datetime-local' class="form-control" th:field="*{bookingDatetime}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

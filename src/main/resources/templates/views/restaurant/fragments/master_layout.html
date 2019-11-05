@@ -66,9 +66,7 @@
                 <div class="image">
                     <img th:src="@{/admin/dist/img/user2-160x160.jpg}" class="img-circle elevation-2" alt="User Image">
                 </div>
-                <div class="info">
-                    <a href="#" class="d-block">Alexander Pierce</a>
-                </div>
+                <div layout:fragment="userFullname"></div>
             </div>
 
             <!-- Sidebar Menu -->
@@ -86,21 +84,9 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="/admin/restaurant_type" class="nav-link">
+                                <a href="/restaurant/info/edit" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Edit Restaurant Infomation</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/admin/restaurant_type/create" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>List Location</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="/admin/restaurant_type/create" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Create New Location</p>
                                 </a>
                             </li>
                         </ul>
@@ -115,13 +101,13 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="/admin/users" class="nav-link">
+                                <a href="/restaurant/booking" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>List Book</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/admin/users" class="nav-link">
+                                <a href="/restaurant/booking/create" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Create New Book</p>
                                 </a>
