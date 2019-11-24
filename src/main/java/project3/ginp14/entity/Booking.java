@@ -1,6 +1,11 @@
 package project3.ginp14.entity;
 
 import javax.persistence.*;
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Entity
 @Table(name = "bookings")
@@ -131,5 +136,29 @@ public class Booking {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getBookingDate(){
+        String[] date = this.bookingDatetime.split(" ")[0].split("-");
+        return date[2]+"-"+date[1]+"-"+date[0];
+    }
+
+    public String getBookingTime(){
+        return this.bookingDatetime.split(" ")[1];
+    }
+
+    public boolean isOutOfDate(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        dateFormat.format(date);
+        Date datetimeBooking;
+        try {
+            datetimeBooking = dateFormat.parse(this.bookingDatetime + ":00");
+        } catch (Exception e){
+            return true;
+        }
+        if (date.after(datetimeBooking)){
+            return false;
+        } else return true;
     }
 }

@@ -49,20 +49,21 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
         //http.headers().frameOptions().disable();
         http.authorizeRequests()
                 .antMatchers("/static/admin/**").permitAll()
+                .antMatchers("/user/**").permitAll()
                 .antMatchers("/home", "/users/register", "/logout").permitAll()
                 // cho phép all admin
                 .antMatchers("/admin/**").permitAll()
                 // cho phép all user
                 .antMatchers("/users/**").permitAll()
-                // cho phép all restaurant
+                // cho phép restaurant
                 .antMatchers("/restaurant","/restaurant/**").permitAll()
-                .anyRequest().hasRole("Role_User")
+                .anyRequest().permitAll()
                 .and()
             .formLogin()
-                .loginPage("/users/login").permitAll()
+                .loginPage("/").permitAll()
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/home")
-                .failureUrl("/users/login?error=true");
+                .defaultSuccessUrl("/login-successful")
+                .failureUrl("/");
     }
 
     @Bean

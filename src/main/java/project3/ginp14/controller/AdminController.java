@@ -1,6 +1,9 @@
 package project3.ginp14.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,8 +26,8 @@ public class AdminController {
 
     // Restaurant type
     @GetMapping("/restaurant_type")
-    public String showListRestaurantType(Model model){
-        List<RestaurantType> listObj = restaurantTypeService.findAll();
+    public String showListRestaurantType(Model model, @PageableDefault(size = 5) Pageable pageable){
+        Page<RestaurantType> listObj = restaurantTypeService.findAll(pageable);
         if (listObj.isEmpty()){
             model.addAttribute("isEmpty",true);
         } else {
@@ -99,8 +102,8 @@ public class AdminController {
 
     // User Management
     @GetMapping("/users")
-    public String showListUsers(Model model){
-        List<User> listObj = userService.findAll();
+    public String showListUsers(Model model, @PageableDefault(size = 5) Pageable pageable){
+        Page<User> listObj = userService.findAllByRoleIsNotAdmin(pageable);
         if (listObj.isEmpty()){
             model.addAttribute("isEmpty",true);
         } else {

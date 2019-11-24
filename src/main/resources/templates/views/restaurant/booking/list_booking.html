@@ -6,12 +6,12 @@
     <title>Title</title>
 </head>
 <body>
-<div layout:fragment="userFullname"><a href="#" th:text="${userFullname}" class="d-block"></a></div>
+<div layout:fragment="userFullname" class="info"><a href="#" th:text="${userFullname}" class="d-block"></a></div>
 <div class="div-content" layout:fragment="content">
     <script>
         function checkDelete(id) {
-            if (confirm('Are you sure to delete this movie ?') == true) {
-                if (confirm('If you delete this Restaurant Type, all Restaurant of this type will be deleted. Do you still want to delete it ?')) {
+            if (confirm('Are you sure to delete this booking ?') == true) {
+                if (confirm('If you delete this Booking, it will disappear for ever. Do you still want to delete it ?')) {
                     window.location.href = "http://localhost:8080/restaurant/booking/delete?id=" + id;
                 }
             }
@@ -21,12 +21,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>List Restaurant Type</h1>
+                    <h1>Danh sách đặt bàn</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">List Booking</li>
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Danh sách đặt bàn</li>
                     </ol>
                 </div>
             </div>
@@ -40,20 +40,21 @@
                     <div class="card container-fluid">
 
                         <div th:if="${isEmpty == true}" class="card-body">
-                            There's no booking, Please click <a th:href="@{/restaurant/booking/create}">HERE</a> to
-                            create new Booking
+                            Không có yêu cầu đặt bàn, Bấm vào <a th:href="@{/restaurant/booking/create}">ĐÂY</a> để tạo
+                            yêu cầu đặt bàn
                         </div>
                         <div th:if="${isEmpty == false}" class="card-body">
                             <table id="example2" class="table table-bordered table-hover">
                                 <thead>
                                 <tr>
-                                    <th>Guest Name</th>
-                                    <th>Guest Telephone</th>
-                                    <th>Number of Person</th>
-                                    <th>Detail</th>
-                                    <th>Booking time</th>
-
-                                    <th>Action</th>
+                                    <th>Tên khách hàng</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Số lượng</th>
+                                    <th>Yêu cầu chi tiết</th>
+                                    <th>Giờ</th>
+                                    <th>Ngày</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -63,14 +64,21 @@
                                         <td th:text="${booking.guestTelephone}"></td>
                                         <td th:text="${booking.quantity}"></td>
                                         <td th:text="${booking.bookingDetail}"></td>
-                                        <td th:text="${booking.bookingDatetime}"></td>
+                                        <td th:with="date = ${booking.bookingDatetime.split(' ')}"
+                                            th:text="${date[1]}"></td>
+                                        <td th:with="date = ${booking.bookingDatetime.split(' ')[0].split('-')}"
+                                            th:text="${date[2]+'-'+date[1]+'-'+date[0]}"></td>
+                                        <td th:if="${booking.verifyStatus == 0}">Chưa xử lý</td>
+                                        <td th:if="${booking.verifyStatus == 1}">Đã xác nhận</td>
+                                        <td th:if="${booking.verifyStatus == 2}">Đã đến</td>
+                                        <td th:if="${booking.verifyStatus == 3}">Đã hủy</td>
                                         <td>
                                             <a th:href="@{/restaurant/booking/edit(id=${booking.id})}">
-                                                <i class="fas fa-edit">Edit</i>
+                                                <i class="fas fa-edit">Sửa</i>
                                             </a>
                                             <a href="#" class="delete-button delete-a-hover" th:id="${booking.id}"
                                                onclick="checkDelete(this.id)" style="color: red;">
-                                                <i class="fas fa-trash-alt">Delete</i>
+                                                <i class="fas fa-trash-alt">Xóa</i>
                                             </a>
                                         </td>
 

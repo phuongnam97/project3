@@ -32,17 +32,22 @@ public class RestaurantController {
     @Autowired
     private UserDao userDao;
 
-    @GetMapping("/dashboard")
+    @GetMapping("/home")
     public String showDashboard(){
         return "views/restaurant/dashboard";
     }
 
-    @GetMapping("/info")
+    @GetMapping("/")
     public String showRestaurantInformation(Model model, Principal principal){
         User user = userDao.findByUsername(principal.getName());
         Restaurant restaurant = restaurantService.findByUserId(user.getId());
+        int seatHold = bookingService.getTotalSeatHold(restaurant.getId());
+
+        System.out.println(seatHold);
+        model.addAttribute("seatNeed", seatHold);
         model.addAttribute("obj", restaurant);
         model.addAttribute("userFullName", user.getFullname());
+        model.addAttribute("seatNeedProcess", bookingService.countAllByRestaurantAndVerifyStatus(restaurant, 0));
         return "views/restaurant/dashboard";
     }
 
@@ -67,7 +72,7 @@ public class RestaurantController {
         restaurant.setUser(user);
 
         restaurantService.save(restaurant);
-        return "redirect:/restaurant/info";
+        return "redirect:/restaurant/";
     }
 
     @GetMapping("/booking")
@@ -102,5 +107,62 @@ public class RestaurantController {
         booking.setCheckStatus(1);
         bookingService.save(booking);
         return "redirect:/restaurant/booking";
+    }
+
+    @GetMapping("/booking/edit")
+    public String showEditForm(@RequestParam int id, Model model, Principal principal, HttpSession httpSession){
+        User user = userDao.findByUsername(principal.getName());
+        Booking booking = bookingService.findById(id);
+        booking.setBookingDatetime(booking.getBookingDatetime().replace(" ", "T"));
+        if (isBookingOfCurrentRestaurant(user, id)){
+            model.addAttribute("obj", booking);
+            model.addAttribute("userFullName", user.getFullname());
+            return "views/restaurant/booking/edit_booking";
+        }
+        else return "redirect:/restaurant/booking";
+    }
+
+    @PostMapping("/booking/edit")
+    public String processEditBooking(@ModelAttribute("obj") Booking booking, Model model, Principal principal, HttpSession httpSession){
+        User user = userDao.findByUsername(principal.getName());
+        Restaurant restaurant = restaurantService.findByUserId(user.getId());
+        if (isBookingOfCurrentRestaurant(user, booking.getId())) {
+            booking.setBookingDatetime(booking.getBookingDatetime().replace("T", " "));
+            booking.setVerifyStatus(1);
+            booking.setCheckStatus(1);
+            bookingService.save(booking);
+            return "redirect:/restaurant/booking";
+        }
+        return "redirect:/restaurant/booking";
+    }
+
+    @GetMapping("/booking/delete")
+    public String deleteRestaurantType(@RequestParam int id, Model model, Principal principal){
+        if (isBookingOfCurrentRestaurant(userDao.findByUsername(principal.getName()), id)) {
+            try {
+                bookingService.deleteById(id);
+                String message = "Delete successfull !!!";
+                model.addAttribute("message", message);
+                model.addAttribute("isSuccess", true);
+            } catch (Exception e) {
+                String message = "Delete failed !!!";
+                model.addAttribute("message", message);
+                model.addAttribute("isSuccess", false);
+            }
+        }
+        else {
+            String message = "Delete failed !!!";
+            model.addAttribute("message", message);
+            model.addAttribute("isSuccess", false);
+        }
+        return "redirect:/restaurant/booking";
+    }
+
+    public boolean isBookingOfCurrentRestaurant(User user, int bookingId){
+        // nếu booking thuộc restaurant
+        if(restaurantService.findByUserId(user.getId()).getId() == bookingService.findById(bookingId).getRestaurant().getId()){
+            return true;
+        }
+        return false;
     }
 }

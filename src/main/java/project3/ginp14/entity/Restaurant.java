@@ -3,6 +3,7 @@ package project3.ginp14.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.text.DecimalFormat;
 
 @Entity
 @Table(name="restaurants")
@@ -175,5 +176,19 @@ public class Restaurant {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getMaxPriceOnView(){
+        String newPriceMax = String.valueOf(this.averagePriceMax);
+        Double amount = Double.parseDouble(newPriceMax);
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        return decimalFormat.format(amount);
+    }
+
+    public String getMinPriceOnView(){
+        String newPriceMin = String.valueOf(this.averagePriceMin);
+        Double amount = Double.parseDouble(newPriceMin);
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        return decimalFormat.format(amount);
     }
 }

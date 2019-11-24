@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{views/restaurant/fragments/master_layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="userFullname" class="info"><a href="#" th:text="${userFullName}" class="d-block"></a></div>
+<div class="div-content" layout:fragment="content">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Sửa thông tin đặt bàn</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Sửa bàn đặt</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form role="form" action="#" th:action="@{/restaurant/booking/create}" method="post" th:object="${obj}">
+                                <input type="hidden" th:value="${obj.id}" th:field="*{id}">
+                                <input type="hidden" th:value="${obj.restaurant}" th:field="*{restaurant}">
+                                <div class="form-group">
+                                    <label for="guest_name">Tên khách hàng</label>
+                                    <input type="text" class="form-control" id="guest_name" placeholder="Nhập tên khách hàng" th:value="${obj.guestName}" th:field="*{guestName}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="guest_telephone">Số điện thoại</label>
+                                    <input type="text" class="form-control" id="guest_telephone" placeholder="Nhập số điện thoại" th:value="${obj.guestTelephone}" th:field="*{guestTelephone}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="person_no">Số lượng ghế</label>
+                                    <input type="number" class="form-control" id="person_no" th:value="${obj.quantity}" th:field="*{quantity}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="booking_detail">Yêu cầu chi tiết</label>
+                                    <textarea class="form-control" id="booking_detail" rows="3" placeholder="Nhập ..." th:value="${obj.bookingDetail}" th:field="*{bookingDetail}"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Thời gian</label>
+                                    <div>
+                                        <div class="row">
+                                            <div class='col-sm-6'>
+                                                <input type='datetime-local' class="form-control" th:value="${obj.bookingDatetime}" th:field="*{bookingDatetime}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Sửa</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>
