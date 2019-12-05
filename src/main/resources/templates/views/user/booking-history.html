@@ -13,9 +13,9 @@
 <body>
 <section layout:fragment="content" class="bgwhite p-t-55 p-b-65 slide1">
     <div class="container">
-        <h4 class="p-b-11 text-center">
+        <h2 class="p-b-11 text-center">
             Lịch sử đặt bàn
-        </h4>
+        </h2><br>
         <div class="container wrap-table-shopping-cart">
             <table class="table-bordered text-center table">
                 <thead>
@@ -39,11 +39,12 @@
                         <td th:if="${obj.verifyStatus == 0}">Chưa xác nhận</td>
                         <td th:if="${obj.verifyStatus == 1}">Đã xác nhận</td>
                         <td th:if="${obj.verifyStatus == 2}">Đã đến</td>
+                        <td th:if="${obj.verifyStatus == 3}">Đã hủy</td>
 
                         <td th:if="${(obj.verifyStatus == 0 || obj.verifyStatus == 1) && obj.isOutOfDate()}">Quá hạn</td>
-                        <td th:if="${(obj.verifyStatus == 0 || obj.verifyStatus == 1) && !obj.isOutOfDate()}"><a href="#">Hủy</a></td>
+                        <td th:if="${(obj.verifyStatus == 0 || obj.verifyStatus == 1) && !obj.isOutOfDate()}"><a th:href="@{/cancel-booking(bookingId=${obj.id})}">Hủy</a></td>
                         <td th:if="${obj.verifyStatus == 2}"><i class="far fa-check-circle" style="color: #00b44e"></i></td>
-                        <td th:if="${obj.verifyStatus == 3}">Đã hủy</td>
+                        <td th:if="${obj.verifyStatus == 3}">-</td>
                         </tr>
                     </th:block>
                 </tbody>

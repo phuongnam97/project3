@@ -54,6 +54,7 @@
                                     <th>Giờ</th>
                                     <th>Ngày</th>
                                     <th>Trạng thái</th>
+                                    <th>Xác nhận</th>
                                     <th>Hành động</th>
                                 </tr>
                                 </thead>
@@ -73,6 +74,11 @@
                                         <td th:if="${booking.verifyStatus == 2}">Đã đến</td>
                                         <td th:if="${booking.verifyStatus == 3}">Đã hủy</td>
                                         <td>
+                                            <a th:if="${booking.verifyStatus == 0}" th:href="@{/restaurant/booking/confirm-booking(bookingId=${booking.id})}" style="color: forestgreen"><i class="far fa-check-circle"> Xác nhận bàn</i></a>
+                                            <a th:if="${booking.verifyStatus == 1}" th:href="@{/restaurant/booking/confirm-arrived(bookingId=${booking.id})}" style="color: forestgreen"><i class="far fa-check-circle"> Xác nhận đến</i></a>
+                                        </td>
+                                        <td>
+
                                             <a th:href="@{/restaurant/booking/edit(id=${booking.id})}">
                                                 <i class="fas fa-edit">Sửa</i>
                                             </a>

@@ -155,10 +155,10 @@ public class Booking {
         try {
             datetimeBooking = dateFormat.parse(this.bookingDatetime + ":00");
         } catch (Exception e){
-            return true;
+            return false;
         }
         if (date.after(datetimeBooking)){
-            return false;
-        } else return true;
+            return true;
+        } else return false;
     }
 }

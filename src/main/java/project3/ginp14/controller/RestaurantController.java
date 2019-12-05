@@ -140,7 +140,9 @@ public class RestaurantController {
     public String deleteRestaurantType(@RequestParam int id, Model model, Principal principal){
         if (isBookingOfCurrentRestaurant(userDao.findByUsername(principal.getName()), id)) {
             try {
-                bookingService.deleteById(id);
+                Booking booking = bookingService.findById(id);
+                booking.setVerifyStatus(3);
+                bookingService.save(booking);
                 String message = "Delete successfull !!!";
                 model.addAttribute("message", message);
                 model.addAttribute("isSuccess", true);
@@ -164,5 +166,27 @@ public class RestaurantController {
             return true;
         }
         return false;
+    }
+
+    @GetMapping("/booking/confirm-booking")
+    public String confirmBooking(@RequestParam("bookingId") int id, Principal principal){
+        User user = userDao.findByUsername(principal.getName());
+        if (isBookingOfCurrentRestaurant(user, id)){
+            Booking booking = bookingService.findById(id);
+            booking.setVerifyStatus(1);
+            bookingService.save(booking);
+        }
+        return "redirect:/restaurant/booking";
+    }
+
+    @GetMapping("/booking/confirm-arrived")
+    public String confirmGuestArrived(@RequestParam("bookingId") int id, Principal principal){
+        User user = userDao.findByUsername(principal.getName());
+        if (isBookingOfCurrentRestaurant(user, id)){
+            Booking booking = bookingService.findById(id);
+            booking.setVerifyStatus(2);
+            bookingService.save(booking);
+        }
+        return "redirect:/restaurant/booking";
     }
 }
