@@ -8,6 +8,13 @@
 <body>
 <div layout:fragment="userFullname" class="info"><a href="/restaurant/" th:text="${userFullName}" class="d-block"></a></div>
 <div class="div-content" layout:fragment="content">
+    <script>
+        $(function () {
+            $("#restaurant-info").addClass("menu-open");
+            $("#restaurant-info").children("a").addClass("active");
+            $("#edit-info").addClass("active")
+        })
+    </script>
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">

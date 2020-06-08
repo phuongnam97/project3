@@ -11,14 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import project3.ginp14.entity.Booking;
-import project3.ginp14.entity.Restaurant;
-import project3.ginp14.entity.RestaurantType;
-import project3.ginp14.entity.User;
-import project3.ginp14.service.BookingService;
-import project3.ginp14.service.RestaurantService;
-import project3.ginp14.service.RestaurantTypeService;
-import project3.ginp14.service.UserService;
+import project3.ginp14.entity.*;
+import project3.ginp14.service.*;
 import project3.ginp14.utils.MailSender;
 
 import java.security.Principal;
@@ -40,6 +34,9 @@ public class HomepageController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private TableService tableService;
 
     public int getBookingTime(String username) {
         return bookingService.countAllByGuestTelephone(userService.findUserbyUsername(username).getTelephone());
@@ -136,6 +133,7 @@ public class HomepageController {
         booking.setVerifyStatus(0);
         booking.setCheckStatus(0);
         booking.setBookingDatetime(booking.getBookingDatetime().replace("T", " "));
+//        List<Table> listTable = booking.getRestaurant();
         bookingService.save(booking);
 
         MailSender mailSender = new MailSender();

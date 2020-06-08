@@ -18,8 +18,9 @@
 
         $(function () {
             console.log("add class")
-            $("#restaurant-type").addClass("menu-open");
+            $("#dish-type").addClass("menu-open");
         })
+
     </script>
     <section class="content-header">
         <div class="container-fluid">
@@ -43,32 +44,32 @@
                 <div class="col-12">
                     <div class="card">
 
-                        <div th:if="${isEmpty == true}" class="card-body">
-                            Không tồn tại loại nhà hàng nào, bấm vào <a
-                                th:href="@{/admin/restaurant_type/create}">ĐÂY</a> để tạo loại nhà hàng mới
+                        <div th:if="${listObj.isEmpty() == true}" class="card-body">
+                            Không tồn tại loại món ăn/ đồ uống nào, bấm vào <a
+                                th:href="@{/admin/dish_type/create}">ĐÂY</a> để tạo loại món ăn/ đồ uống mới
                         </div>
-                        <div th:if="${isEmpty == false}" class="card-body">
+                        <div th:if="${listObj.isEmpty() == false}" class="card-body">
                             <table id="example2" class="table table-bordered table-hover">
                                 <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>#</th>
                                     <th>Tên</th>
                                     <th>Mô tả</th>
                                     <th>Hành động</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <th:block th:each="restaurant_type:${listObj}">
+                                <th:block th:each="obj:${listObj}">
                                     <tr>
-                                        <td th:text="${restaurant_type.id}"></td>
-                                        <td th:text="${restaurant_type.name}"></td>
-                                        <td th:text="${restaurant_type.description}"></td>
+                                        <td th:text="${obj.id}"></td>
+                                        <td th:text="${obj.name}"></td>
+                                        <td th:text="${obj.description}"></td>
                                         <td>
-                                            <a th:href="@{/admin/restaurant_type/edit(id=${restaurant_type.id})}">
+                                            <a th:href="@{/admin/dish_type/edit(id=${obj.id})}">
                                                 <i class="fas fa-edit">Sửa</i>
                                             </a>
                                             <a href="#" class="delete-button delete-a-hover"
-                                               th:id="${restaurant_type.id}" onclick="checkDelete(this.id)"
+                                               th:id="${obj.id}" onclick="checkDelete(this.id)"
                                                style="color: red;">
                                                 <i class="fas fa-trash-alt">Xóa</i>
                                             </a>
@@ -79,15 +80,25 @@
                             </table>
                         </div>
                         <!-- /.card-body -->
-                        <div class="card-footer clearfix">
-                            <ul class="pagination pagination-sm m-0 float-right">
-                                <li th:if="${listObj.hasPrevious()}" class="page-item"><a class="page-link" th:href="@{/admin/users(page=${listObj.number - 1})}">«</a></li>
-                                <th:block th:each="i : ${#numbers.sequence(0, listObj.totalPages - 1)}">
-                                    <li th:if="${listObj.number == i}" class="page-item"><a class="page-link" th:href="@{/admin/users(page=${i})}">[[${i}+1]]</a></li>
-                                    <li th:unless="${listObj.number == i}" class="page-item"><a class="page-link" th:href="@{/admin/users(page=${i})}">[[${i}+1]]</a></li>
-                                </th:block>
-                                <li th:if="${listObj.hasNext()}" class="page-item"><a class="page-link" th:href="@{/admin/users(page=${listObj.number + 1})}">»</a></li>
-                            </ul>
+                        <div th:if="${listObj.isEmpty() == false}">
+                            <div class="card-footer clearfix">
+                                <ul class="pagination pagination-sm m-0 float-right">
+                                    <li th:if="${listObj.hasPrevious()}" class="page-item"><a class="page-link"
+                                                                                              th:href="@{/admin/users(page=${listObj.number - 1})}">«</a>
+                                    </li>
+                                    <th:block th:each="i : ${#numbers.sequence(0, listObj.totalPages - 1)}">
+                                        <li th:if="${listObj.number == i}" class="page-item"><a class="page-link"
+                                                                                                th:href="@{/admin/users(page=${i})}">[[${i}+1]]</a>
+                                        </li>
+                                        <li th:unless="${listObj.number == i}" class="page-item"><a class="page-link"
+                                                                                                    th:href="@{/admin/users(page=${i})}">[[${i}+1]]</a>
+                                        </li>
+                                    </th:block>
+                                    <li th:if="${listObj.hasNext()}" class="page-item"><a class="page-link"
+                                                                                          th:href="@{/admin/users(page=${listObj.number + 1})}">»</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>

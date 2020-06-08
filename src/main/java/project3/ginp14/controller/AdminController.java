@@ -8,8 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import project3.ginp14.entity.DishType;
 import project3.ginp14.entity.RestaurantType;
 import project3.ginp14.entity.User;
+import project3.ginp14.service.DishTypeService;
 import project3.ginp14.service.RestaurantTypeService;
 import project3.ginp14.service.UserService;
 
@@ -23,6 +25,9 @@ public class AdminController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    DishTypeService dishTypeService;
 
     // Restaurant type
     @GetMapping("/restaurant_type")
@@ -141,5 +146,59 @@ public class AdminController {
             model.addAttribute("isSuccess", false);
         }
         return "redirect:";
+    }
+
+
+    // DishType
+    @GetMapping("/dish_type")
+    public String showListDishType(Model model, @PageableDefault(size = 5) Pageable pageable){
+        Page<DishType> listObj = dishTypeService.findAll(pageable);
+        model.addAttribute("listObj",listObj);
+        return "views/admin/dishtype/list_dish_type";
+    }
+
+    @GetMapping("/dish_type/create")
+    public String showFormCreateDishType(Model model){
+        DishType dishType = new DishType();
+        model.addAttribute("obj", dishType);
+        return "views/admin/dishtype/create_dish_type";
+    }
+
+    @PostMapping("/dish_type/create")
+    public String processCreateDishType(@ModelAttribute("obj") DishType dishType, Model model){
+        try {
+            dishTypeService.save(dishType);
+            String message = "Create successfull !!!";
+            model.addAttribute("isSuccess", true);
+            model.addAttribute("message", message);
+        } catch (Exception e){
+            String message = "Create failed !!!";
+            model.addAttribute("message", message);
+            model.addAttribute("isSuccess", false);
+        }
+        return "redirect:/admin/dish_type";
+    }
+
+    @GetMapping("/dish_type/edit")
+    public String showFormEditDishType(@RequestParam("id") int id, Model model){
+        DishType dishType = dishTypeService.findById(id);
+        model.addAttribute("obj", dishType);
+        return "views/admin/dishtype/edit_dish_type";
+    }
+
+    @PostMapping("/dish_type/edit")
+    public String processEditDishType(@ModelAttribute("obj") DishType dishType, Model model){
+        try {
+            dishTypeService.save(dishType);
+            String message = "Create successfull !!!";
+
+            model.addAttribute("isSuccess", true);
+            model.addAttribute("message", message);
+        } catch (Exception e){
+            String message = "Create failed !!!";
+            model.addAttribute("isSuccess", false);
+            model.addAttribute("message", message);
+        }
+        return "redirect:/admin/dish_type";
     }
 }

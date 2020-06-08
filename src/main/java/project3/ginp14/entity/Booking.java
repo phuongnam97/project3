@@ -1,6 +1,7 @@
 package project3.ginp14.entity;
 
 import javax.persistence.*;
+import javax.persistence.Table;
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
@@ -25,6 +26,10 @@ public class Booking {
     private int quantity;
 
     @OneToOne
+    @JoinColumn(name = "table_id")
+    private project3.ginp14.entity.Table table;
+
+    @OneToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
@@ -45,6 +50,19 @@ public class Booking {
     private User createdUser;
 
     public Booking() {
+    }
+
+    public Booking(String guestName, String guestTelephone, int quantity, project3.ginp14.entity.Table table, Restaurant restaurant, String bookingDatetime, String bookingDetail, int verifyStatus, int checkStatus, User createdUser) {
+        this.guestName = guestName;
+        this.guestTelephone = guestTelephone;
+        this.quantity = quantity;
+        this.table = table;
+        this.restaurant = restaurant;
+        this.bookingDatetime = bookingDatetime;
+        this.bookingDetail = bookingDetail;
+        this.verifyStatus = verifyStatus;
+        this.checkStatus = checkStatus;
+        this.createdUser = createdUser;
     }
 
     public Booking(String guestName, String guestTelephone, Restaurant restaurant, String bookingDatetime, String bookingDetail, int verifyStatus, int checkStatus, User createdUser) {

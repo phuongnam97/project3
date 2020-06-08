@@ -1,6 +1,7 @@
 package project3.ginp14.entity;
 
 import javax.persistence.*;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.text.DecimalFormat;

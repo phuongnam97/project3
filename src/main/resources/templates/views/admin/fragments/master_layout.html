@@ -18,6 +18,22 @@
     <link rel="stylesheet" th:href="@{/admin/dist/css/adminlte.min.css}">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <!-- jQuery -->
+    <script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+    <!-- Bootstrap -->
+    <script th:src="@{/admin/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <!-- jQuery UI -->
+    <script th:src="@{/admin/plugins/jquery-ui/jquery-ui.min.js}"></script>
+    <!-- Ekko Lightbox -->
+    <script th:src="@{/admin/plugins/ekko-lightbox/ekko-lightbox.min.js}"></script>
+    <!-- AdminLTE App -->
+    <script th:src="@{/admin/dist/js/adminlte.min.js}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script th:src="@{/admin/dist/js/demo.js}"></script>
+    <!-- Filterizr-->
+    <script th:src="@{/admin/plugins/filterizr/jquery.filterizr.min.js}"></script>
+    <!-- Page specific script -->
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -73,7 +89,7 @@
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     <!-- Add icons to the links using the .nav-icon class
                          with font-awesome or any other icon font library -->
-                    <li class="nav-item has-treeview">
+                    <li class="nav-item has-treeview" id="restaurant-type">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-chart-pie"></i>
                             <p>
@@ -96,7 +112,30 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item has-treeview">
+                    <li class="nav-item has-treeview" id="dish-type">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-chart-pie"></i>
+                            <p>
+                                Quản lý loại món
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="/admin/dish_type" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Danh sách loại món</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/admin/dish_type/create" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Tạo mới loại món</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item has-treeview" id="user-management">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-chart-pie"></i>
                             <p>
@@ -148,21 +187,6 @@
 </div>
 <!-- ./wrapper -->
 
-<!-- jQuery -->
-<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
-<!-- Bootstrap -->
-<script th:src="@{/admin/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
-<!-- jQuery UI -->
-<script th:src="@{/admin/plugins/jquery-ui/jquery-ui.min.js}"></script>
-<!-- Ekko Lightbox -->
-<script th:src="@{/admin/plugins/ekko-lightbox/ekko-lightbox.min.js}"></script>
-<!-- AdminLTE App -->
-<script th:src="@{/admin/dist/js/adminlte.min.js}"></script>
-<!-- AdminLTE for demo purposes -->
-<script th:src="@{/admin/dist/js/demo.js}"></script>
-<!-- Filterizr-->
-<script th:src="@{/admin/plugins/filterizr/jquery.filterizr.min.js}"></script>
-<!-- Page specific script -->
 <script>
     $(function () {
         $(document).on('click', '[data-toggle="lightbox"]', function(event) {

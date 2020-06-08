@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -25,21 +26,21 @@ public class User implements UserDetails {
     private int id;
 
     @Column(name = "username")
-    @NotBlank(message = "This field cannot be blank")
+    @NotBlank(message = "Vui lòng nhập tên người dùng")
     private String username;
 
     @Column(name = "password")
-    @NotBlank(message = "This field cannot be blank")
-    @Size(min = 5, message = "Password is too short")
+    @NotBlank(message = "Vui lòng nhập mật khẩu")
+    @Size(min = 5, message = "Mật khẩu quá ngắn, mật khẩu chứa ít nhất 5 ký tự")
     private String password;
 
-    @NotBlank(message = "This field cannot be blank")
+    @NotBlank(message = "Vui lòng nhập tên")
     @Column(name = "full_name")
     private String fullname;
 
 
     @Column(name = "gender")
-    @NotNull(message = "Please select gender")
+    @NotNull(message = "Vui lòng lựa chọn giới tính")
     private int gender;
 
     @Column(name = "address")
@@ -47,8 +48,8 @@ public class User implements UserDetails {
 
 
     @Column(name = "email")
-    @NotBlank(message = "This field cannot be blank")
-    @Email(message = "This is not a valid email")
+    @NotBlank(message = "Vui lòng nhập email")
+    @Email(message = "Email không được nhập đúng")
     private String email;
 
     @Column(name = "dob")
@@ -56,8 +57,8 @@ public class User implements UserDetails {
 
 
     @Column(name = "telephone")
-    @NotBlank(message = "This field cannot be blank")
-    @Size(max = 11,message = "Phone number must be less than 11 digits")
+    @NotBlank(message = "Vui lòng nhập số điện thoại")
+    @Size(max = 11,message = "Số điện thoại dài tối đa 11 ký tự")
     private String telephone;
 
     @OneToOne
@@ -75,7 +76,7 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private Timestamp updated_at;
 
-    public User(@NotBlank(message = "This field cannot be blank") String username, @NotBlank(message = "This field cannot be blank") @Size(min = 5, message = "Password is too short") String password, @NotBlank(message = "This field cannot be blank") String fullname, @NotNull(message = "Please select gender") int gender, String address, @NotBlank(message = "This field cannot be blank") @Email(message = "This is not a valid email") String email, String DOB, @NotBlank(message = "This field cannot be blank") @Size(max = 11, message = "Phone number must be less than 11 digits") String telephone, Role role) {
+    public User(@NotBlank(message = "Vui lòng nhập tên người dùng") String username, @NotBlank(message = "Vui lòng nhập mật khẩu") @Size(min = 5, message = "Mật khẩu quá ngắn, mật khẩu chứa ít nhất 5 ký tự") String password, @NotBlank(message = "Vui lòng nhập tên") String fullname, @NotNull(message = "Vui lòng lựa chọn giới tính") int gender, String address, @NotBlank(message = "Vui lòng nhập email") @Email(message = "Email không được nhập đúng") String email, String DOB, @NotBlank(message = "Vui lòng nhập số điện thoại") @Size(max = 11, message = "Số điện thoại dài tối đa 11 ký tự") String telephone, Role role) {
         this.username = username;
         this.password = password;
         this.fullname = fullname;
@@ -87,7 +88,7 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    public User(@NotBlank(message = "This field cannot be blank") String username, @NotBlank(message = "This field cannot be blank") @Size(min = 5, message = "Password is too short") String password) {
+    public User(@NotBlank(message = "Vui lòng nhập tên người dùng") String username, @NotBlank(message = "Vui lòng nhập mật khẩu") @Size(min = 5, message = "Mật khẩu quá ngắn, mật khẩu chứa ít nhất 5 ký tự") String password) {
         this.username = username;
         this.password = password;
     }

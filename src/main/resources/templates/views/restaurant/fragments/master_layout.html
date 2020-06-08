@@ -18,6 +18,8 @@
     <link rel="stylesheet" th:href="@{/admin/dist/css/adminlte.min.css}">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <!-- jquery -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -74,9 +76,9 @@
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     <!-- Add icons to the links using the .nav-icon class
                          with font-awesome or any other icon font library -->
-                    <li class="nav-item has-treeview">
+                    <li class="nav-item has-treeview" id="restaurant-info">
                         <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-chart-pie"></i>
+                            <i class="nav-icon fas fa-info"></i>
                             <p>
                                 Thông tin cửa hàng
                                 <i class="right fas fa-angle-left"></i>
@@ -84,14 +86,14 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="/restaurant/info/edit" class="nav-link">
+                                <a href="/restaurant/info/edit" class="nav-link" id="edit-info">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Sửa thông tin cửa hàng</p>
                                 </a>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item has-treeview">
+                    <li class="nav-item has-treeview" id="booking-management">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-chart-pie"></i>
                             <p>
@@ -101,20 +103,67 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="/restaurant/booking" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
+                                <a href="/restaurant/booking" class="nav-link" id="list-booking">
+                                    <i class="far fa-list-alt nav-icon"></i>
                                     <p>Danh sách đặt bàn</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/restaurant/booking/create" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
+                                <a href="/restaurant/booking/create" class="nav-link" id="create-booking">
+                                    <i class="far fa-plus-square nav-icon"></i>
                                     <p>Tạo lịch đặt bàn mới</p>
                                 </a>
                             </li>
                         </ul>
                     </li>
 
+                    <li class="nav-item has-treeview" id="table-management">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-chair"></i>
+                            <p>
+                                Quản lý bàn
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="/restaurant/table" class="nav-link" id="list-table">
+                                    <i class="far fa-list-alt nav-icon"></i>
+                                    <p>Danh sách bàn</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/restaurant/table/create" class="nav-link" id="create-table">
+                                    <i class="far fa-plus-square nav-icon"></i>
+                                    <p>Tạo bàn</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item has-treeview" id="dish-management">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-utensils"></i>
+                            <p>
+                                Quản lý món ăn
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="/restaurant/dish" class="nav-link" id="list-dish">
+                                    <i class="far fa-list-alt nav-icon"></i>
+                                    <p>Danh sách món ăn</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/restaurant/dish/create" class="nav-link" id="create-dish">
+                                    <i class="far fa-plus-square nav-icon"></i>
+                                    <p>Tạo món</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->

@@ -8,6 +8,13 @@
 <body>
 <div layout:fragment="userFullname" class="info"><a href="#" th:text="${userFullName}" class="d-block"></a></div>
 <div class="div-content" layout:fragment="content">
+    <script>
+        $(function () {
+            $("#booking-management").addClass("menu-open");
+            $("#booking-management").children('a').addClass("active");
+            $("#create-booking").addClass("active");
+        })
+    </script>
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
