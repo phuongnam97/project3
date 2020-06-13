@@ -16,10 +16,7 @@ import project3.ginp14.service.*;
 import project3.ginp14.utils.MailSender;
 
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 @Controller
 public class HomepageController {
@@ -112,11 +109,13 @@ public class HomepageController {
         }
 
         Restaurant restaurant = restaurantService.findById(restaurantId);
+        List<Table> listTable = tableService.findByRestaurant(restaurant);
         Booking booking = new Booking();
         model.addAttribute("obj", booking);
         model.addAttribute("user_id", currentUser.getId());
         model.addAttribute("restaurant", restaurant);
         model.addAttribute("listRestaurantType", getListRestaurantType());
+        model.addAttribute("listTable", listTable);
         try {
             model.addAttribute("bookingTime", getBookingTime(principal.getName()));
         } catch (Exception ex) {
@@ -133,13 +132,24 @@ public class HomepageController {
         booking.setVerifyStatus(0);
         booking.setCheckStatus(0);
         booking.setBookingDatetime(booking.getBookingDatetime().replace("T", " "));
-//        List<Table> listTable = booking.getRestaurant();
-        bookingService.save(booking);
+        List<Table> listTable = tableService.findEmptyTableByRestaurant(booking.getRestaurant(), booking.getBookingDatetime().replace("T", " "), booking.getQuantity());
 
-        MailSender mailSender = new MailSender();
-        mailSender.sendMail(user.getEmail(), "Đặt bàn tại cửa hàng " + booking.getRestaurant().getName(), "Gửi " + user.getFullname() + ",\n\nBạn đã đặt bàn tại nhà hàng " + booking.getRestaurant().getName() + "\nBạn sẽ nhận được điện thoại xác nhận trong thời gian sớm nhất.\n\n Cảm ơn \n Hệ thống quản lý nhà hàng");
-        mailSender.sendMail(booking.getRestaurant().getUser().getEmail(), "Khách hàng " + user.getFullname() + " đặt bàn tại nhà hàng của bạn", "Gửi "  +booking.getRestaurant().getName() + ",\n\nKhách hàng " + user.getFullname() + " đã đặt bàn tại nhà hàng của bạn. \nVui lòng kiểm tra và xác nhận lại ngay khi có thể.\n\n Cảm ơn \n Hệ thống quản lý nhà hàng");
-        return "redirect:/";
+        if (listTable.size() > 0) {
+            Random random = new Random();
+            Table table = listTable.get(random.nextInt(listTable.size()));
+            booking.setTable(table);
+
+            bookingService.save(booking);
+
+
+            MailSender mailSender = new MailSender();
+            mailSender.sendMail(user.getEmail(), "Đặt bàn tại cửa hàng " + booking.getRestaurant().getName(), "Gửi " + user.getFullname() + ",\n\nBạn đã đặt bàn tại nhà hàng " + booking.getRestaurant().getName() + "\nMã bàn là: " + table.getCode() + "\nBạn sẽ nhận được điện thoại xác nhận trong thời gian sớm nhất.\n\n Cảm ơn \n Hệ thống quản lý nhà hàng");
+            mailSender.sendMail(booking.getRestaurant().getUser().getEmail(), "Khách hàng " + user.getFullname() + " đặt bàn tại nhà hàng của bạn", "Gửi " + booking.getRestaurant().getName() + ",\n\nKhách hàng " + user.getFullname() + " đã đặt bàn " + table.getCode() + " tại nhà hàng của bạn. \nVui lòng kiểm tra và xác nhận lại ngay khi có thể.\n\n Cảm ơn \n Hệ thống quản lý nhà hàng");
+            return "redirect:/";
+        } else {
+            model.addAttribute("message", "Không còn bàn phù hợp với yêu cầu của bạn");
+            return "redirect:/booking?restaurantId=" + booking.getRestaurant().getId();
+        }
     }
 
     @GetMapping("/booking-history")
@@ -164,7 +174,7 @@ public class HomepageController {
     }
 
     @GetMapping("/cancel-booking")
-    public String processCancelBooking(@RequestParam("bookingId") int id, Principal principal){
+    public String processCancelBooking(@RequestParam("bookingId") int id, Principal principal) {
         Booking booking = bookingService.findById(id);
         User user = userService.findUserbyUsername(principal.getName());
         if (user.getFullname().equals(booking.getGuestName()) && user.getTelephone().equals(booking.getGuestTelephone())) {

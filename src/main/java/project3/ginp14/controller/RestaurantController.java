@@ -43,6 +43,9 @@ public class RestaurantController {
     @Autowired
     private CloudinaryConfig cloudinary;
 
+    @Autowired
+    private OrderService orderService;
+
     // Dashboard
     @GetMapping("/home")
     public String showDashboard() {
@@ -132,9 +135,13 @@ public class RestaurantController {
         System.out.println(booking.getCheckStatus());
         System.out.println(booking.getVerifyStatus());
         booking.setBookingDatetime(booking.getBookingDatetime().replace(" ", "T"));
+        List<Dish> listDish = dishService.findByRestaurant(booking.getRestaurant());
+        List<Order> listOrder = orderService.findByBooking(booking);
         if (isBookingOfCurrentRestaurant(user, id)) {
             model.addAttribute("obj", booking);
             model.addAttribute("userFullName", user.getFullname());
+            model.addAttribute("listDish", listDish);
+            model.addAttribute("listItem", listOrder);
             return "views/restaurant/booking/edit_booking";
         } else return "redirect:/restaurant/booking";
     }
@@ -385,5 +392,31 @@ public class RestaurantController {
             return true;
         }
         return false;
+    }
+
+    @GetMapping("/order/create")
+    public String createOrders(@RequestParam("listId") String listId, @RequestParam("bookingId") int bookingId){
+        System.out.println("========================");
+        System.out.println(listId);
+        System.out.println("========================");
+        String[] listDishId = listId.split(",");
+        try {
+            for (int i = 0; i < listDishId.length - 1; i++) {
+                Booking booking = bookingService.findById(bookingId);
+                Dish dish = dishService.findById(Integer.valueOf(listDishId[i]));
+                Order order = orderService.findByBookingAndDish(booking, dish);
+                if (order == null) {
+                    order = new Order();
+                    order.setBooking(booking);
+                    order.setDish(dish);
+                    order.setQuantity(1);
+                    orderService.create(order);
+                }
+            }
+            List<Order> listOrder = orderService.findByBooking(bookingService.findById(bookingId));
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return "";
     }
 }

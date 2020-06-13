@@ -31,8 +31,8 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
-                        <li class="breadcrumb-item active">Danh sách đặt bàn</li>
+                        <li class="breadcrumb-order"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-order active">Danh sách đặt bàn</li>
                     </ol>
                 </div>
             </div>
@@ -56,6 +56,7 @@
                                     <th>Tên khách hàng</th>
                                     <th>Số điện thoại</th>
                                     <th>Số lượng</th>
+                                    <th>Mã bàn đặt</th>
                                     <th>Yêu cầu chi tiết</th>
                                     <th>Giờ</th>
                                     <th>Ngày</th>
@@ -70,6 +71,7 @@
                                         <td th:text="${booking.guestName}"></td>
                                         <td th:text="${booking.guestTelephone}"></td>
                                         <td th:text="${booking.quantity}"></td>
+                                        <td th:text="${booking.table.code}"></td>
                                         <td th:text="${booking.bookingDetail}"></td>
                                         <td th:with="date = ${booking.bookingDatetime.split(' ')}"
                                             th:text="${date[1]}"></td>
@@ -88,14 +90,13 @@
                                         <td>
 
                                             <a th:href="@{/restaurant/booking/edit(id=${booking.id})}">
-                                                <i class="fas fa-edit">Sửa</i>
+                                                <i class="fas fa-edit">Chi tiết</i>
                                             </a>
+                                            |
                                             <a href="#" class="delete-button delete-a-hover" th:id="${booking.id}"
                                                onclick="checkDelete(this.id)" style="color: red;">
                                                 <i class="fas fa-trash-alt">Xóa</i>
                                             </a>
-                                            <a th:if="${booking.verifyStatus == 2}" href="#" id="dish-order"><i class="fas fa-book">Gọi món</i></a>
-                                            <a th:if="${booking.verifyStatus == 2}" href="#" id="payment"><i class="fas fa-cash-register">Thanh toán</i></a>
                                         </td>
 
                                     </tr>

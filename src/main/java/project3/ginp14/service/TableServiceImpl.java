@@ -1,6 +1,7 @@
 package project3.ginp14.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import project3.ginp14.dao.TableDao;
 import project3.ginp14.entity.Restaurant;
@@ -14,6 +15,9 @@ public class TableServiceImpl implements TableService{
     @Autowired
     private TableDao tableDao;
 
+    @Value("${meal.time}")
+    private int mealTime;
+
     public void save(Table table){
         tableDao.save(table);
     }
@@ -23,9 +27,9 @@ public class TableServiceImpl implements TableService{
         return listTable;
     }
 
-    public List<Table> findEmptyTableByRestaurant(Restaurant restaurant){
-
-        return null;
+    public List<Table> findEmptyTableByRestaurant(Restaurant restaurant, String bookingDatetime, int quantity){
+        List<Table> listTable = tableDao.findTableEmptyByRestaurantAndByBookingTime(restaurant.getId(), bookingDatetime, mealTime, quantity);
+        return listTable;
     }
 
     @Override

@@ -52,12 +52,12 @@
         </div>
         <!-- Pagination -->
         <div class="pagination flex-m flex-w p-t-26">
-            <a th:if="${listObj.hasPrevious()}" th:href="@{/booking-history(page=${listObj.number - 1})}" class="item-pagination flex-c-m trans-0-4 active-pagination">«</a>
+            <a th:if="${listObj.hasPrevious()}" th:href="@{/booking-history(page=${listObj.number - 1})}" class="order-pagination flex-c-m trans-0-4 active-pagination">«</a>
             <th:block th:each="i : ${#numbers.sequence(0, listObj.totalPages - 1)}">
-                <a th:if="${listObj.number == i}" th:href="@{/booking-history(page=${i})}" class="item-pagination flex-c-m trans-0-4 active-pagination">[[${i}+1]]</a>
-                <a th:unless="${listObj.number == i}" th:href="@{/booking-history(page=${i})}" class="item-pagination flex-c-m trans-0-4 active-pagination">[[${i}+1]]</a>
+                <a th:if="${listObj.number == i}" th:href="@{/booking-history(page=${i})}" class="order-pagination flex-c-m trans-0-4 active-pagination">[[${i}+1]]</a>
+                <a th:unless="${listObj.number == i}" th:href="@{/booking-history(page=${i})}" class="order-pagination flex-c-m trans-0-4 active-pagination">[[${i}+1]]</a>
             </th:block>
-            <a th:if="${listObj.hasPrevious()}" th:href="@{/booking-history(page=${listObj.number - 1})}" class="item-pagination flex-c-m trans-0-4 active-pagination">»</a>
+            <a th:if="${listObj.hasPrevious()}" th:href="@{/booking-history(page=${listObj.number - 1})}" class="order-pagination flex-c-m trans-0-4 active-pagination">»</a>
         </div>
     </div>
 </section>

@@ -29,8 +29,8 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
-                        <li class="breadcrumb-item active">Danh sách loại nhà hàng</li>
+                        <li class="breadcrumb-order"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-order active">Danh sách loại nhà hàng</li>
                     </ol>
                 </div>
             </div>
@@ -81,12 +81,12 @@
                         <!-- /.card-body -->
                         <div class="card-footer clearfix">
                             <ul class="pagination pagination-sm m-0 float-right">
-                                <li th:if="${listObj.hasPrevious()}" class="page-item"><a class="page-link" th:href="@{/admin/users(page=${listObj.number - 1})}">«</a></li>
+                                <li th:if="${listObj.hasPrevious()}" class="page-order"><a class="page-link" th:href="@{/admin/users(page=${listObj.number - 1})}">«</a></li>
                                 <th:block th:each="i : ${#numbers.sequence(0, listObj.totalPages - 1)}">
-                                    <li th:if="${listObj.number == i}" class="page-item"><a class="page-link" th:href="@{/admin/users(page=${i})}">[[${i}+1]]</a></li>
-                                    <li th:unless="${listObj.number == i}" class="page-item"><a class="page-link" th:href="@{/admin/users(page=${i})}">[[${i}+1]]</a></li>
+                                    <li th:if="${listObj.number == i}" class="page-order"><a class="page-link" th:href="@{/admin/users(page=${i})}">[[${i}+1]]</a></li>
+                                    <li th:unless="${listObj.number == i}" class="page-order"><a class="page-link" th:href="@{/admin/users(page=${i})}">[[${i}+1]]</a></li>
                                 </th:block>
-                                <li th:if="${listObj.hasNext()}" class="page-item"><a class="page-link" th:href="@{/admin/users(page=${listObj.number + 1})}">»</a></li>
+                                <li th:if="${listObj.hasNext()}" class="page-order"><a class="page-link" th:href="@{/admin/users(page=${listObj.number + 1})}">»</a></li>
                             </ul>
                         </div>
                     </div>

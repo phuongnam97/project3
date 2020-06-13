@@ -156,6 +156,14 @@ public class Booking {
         this.quantity = quantity;
     }
 
+    public project3.ginp14.entity.Table getTable() {
+        return table;
+    }
+
+    public void setTable(project3.ginp14.entity.Table table) {
+        this.table = table;
+    }
+
     public String getBookingDate(){
         String[] date = this.bookingDatetime.split(" ")[0].split("-");
         return date[2]+"-"+date[1]+"-"+date[0];

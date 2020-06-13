@@ -109,12 +109,12 @@
 
                 <!-- Pagination -->
                 <div th:with="restaurantTypeId = ${restaurantTypeId}" class="pagination flex-m flex-w p-t-26">
-                    <a th:if="${listRestaurant.hasPrevious()}" th:href="@{/list-restaurant(restaurantTypeId=restaurantTypeId, page=${listRestaurant.number - 1})}" class="item-pagination flex-c-m trans-0-4 active-pagination">«</a>
+                    <a th:if="${listRestaurant.hasPrevious()}" th:href="@{/list-restaurant(restaurantTypeId=restaurantTypeId, page=${listRestaurant.number - 1})}" class="order-pagination flex-c-m trans-0-4 active-pagination">«</a>
                     <th:block th:each="i : ${#numbers.sequence(0, listRestaurant.totalPages - 1)}">
-                        <a th:if="${listRestaurant.number == i}" th:href="@{/list-restaurant(restaurantTypeId=restaurantTypeId, page=${i})}" class="item-pagination flex-c-m trans-0-4 active-pagination">[[${i}+1]]</a>
-                        <a th:unless="${listRestaurant.number == i}" th:href="@{/list-restaurant(restaurantTypeId=restaurantTypeId, page=${i})}" class="item-pagination flex-c-m trans-0-4 active-pagination">[[${i}+1]]</a>
+                        <a th:if="${listRestaurant.number == i}" th:href="@{/list-restaurant(restaurantTypeId=restaurantTypeId, page=${i})}" class="order-pagination flex-c-m trans-0-4 active-pagination">[[${i}+1]]</a>
+                        <a th:unless="${listRestaurant.number == i}" th:href="@{/list-restaurant(restaurantTypeId=restaurantTypeId, page=${i})}" class="order-pagination flex-c-m trans-0-4 active-pagination">[[${i}+1]]</a>
                     </th:block>
-                    <a th:if="${listRestaurant.hasPrevious()}" th:href="@{/list-restaurant(restaurantTypeId=restaurantTypeId, page=${listRestaurant.number - 1})}" class="item-pagination flex-c-m trans-0-4 active-pagination">»</a>
+                    <a th:if="${listRestaurant.hasPrevious()}" th:href="@{/list-restaurant(restaurantTypeId=restaurantTypeId, page=${listRestaurant.number - 1})}" class="order-pagination flex-c-m trans-0-4 active-pagination">»</a>
                 </div>
             </div>
         </div>
