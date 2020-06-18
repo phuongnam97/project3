@@ -9,5 +9,6 @@ import java.util.List;
 public interface OrderService {
     List<Order> findByBooking(Booking booking);
     Order findByBookingAndDish(Booking booking, Dish dish);
-    void create(Order order);
+    Order findById(int id);
+    void save(Order order);
 }

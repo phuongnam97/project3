@@ -23,8 +23,8 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-order"><a href="#">Trang chủ</a></li>
-                        <li class="breadcrumb-order active">Trang tạo mới lịch đặt bàn cho khách</li>
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Trang tạo mới lịch đặt bàn cho khách</li>
                     </ol>
                 </div>
             </div>
@@ -39,29 +39,39 @@
                             <form role="form" action="#" th:action="@{/restaurant/booking/create}" method="post" th:object="${obj}">
                                 <div class="form-group">
                                     <label for="guest_name">Tên Khách đặt</label>
-                                    <input type="text" class="form-control" id="guest_name" placeholder="Nhập tên khách hàng" th:field="*{guestName}">
+                                    <input type="text" class="form-control" id="guest_name" pattern="[A-Za-z\s]{2,32}" placeholder="Nhập tên khách hàng" th:field="*{guestName}" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="guest_telephone">Số điện thoại</label>
-                                    <input type="text" class="form-control" id="guest_telephone" placeholder="Nhập số điện thoại" th:field="*{guestTelephone}">
+                                    <input type="text" class="form-control" id="guest_telephone" pattern="(03|07|08|09|01[2|6|8|9])+([0-9]{8})" placeholder="Nhập số điện thoại" th:field="*{guestTelephone}" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="person_no">Số lượng ghế</label>
-                                    <input type="number" class="form-control" id="person_no" th:field="*{quantity}">
+                                    <input type="number" class="form-control" id="person_no" min="1" th:field="*{quantity}" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="booking_detail">Yêu cầu chi tiết</label>
                                     <textarea class="form-control" id="booking_detail" rows="3" placeholder="Nhập ..." th:field="*{bookingDetail}"></textarea>
                                 </div>
+                                <div class="list-table" style="display: none"></div>
                                 <div class="form-group">
-                                    <label>Thời gian</label>
+                                    <label for="bookingDatetime">Thời gian</label>
                                     <div>
                                         <div class="row">
                                             <div class='col-sm-6'>
-                                                <input type='datetime-local' class="form-control" th:field="*{bookingDatetime}"/>
+                                                <input type='datetime-local' class="date-picker-class form-control booking-datetime-class" th:field="*{bookingDatetime}" required/>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <input type="button" class="btn-confirm btn-primary" value="Xác nhận">
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="table-choose-option">Chọn bàn</label>
+                                    <select class="form-control" id="table-choose-option" th:field="*{table}" required>
+
+                                    </select>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Tạo mới</button>
@@ -71,6 +81,32 @@
                 </div>
             </div>
         </div>
+        <script>
+            $(".btn-confirm").click(function () {
+                var url = window.location.origin + "/restaurant/table/getListAvailable"
+                var quantity = parseInt($('#person_no').val());
+                var bookingDateTime = $(".booking-datetime-class").val().replace("T", " ");
+                console.log(quantity)
+                console.log(bookingDateTime)
+                var bookingRequest = {quantity: quantity, bookingDateTime: bookingDateTime}
+
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    data: JSON.stringify(bookingRequest),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        var contentHTML = ""
+                        for (i in data){
+                            console.log(data[i])
+                            contentHTML += "<option value='"+data[i].id+"'>"+data[i].code +"</option>"
+                        }
+                        $('#table-choose-option').html(contentHTML)
+                    }
+                })
+            })
+        </script>
     </section>
 </div>
 </body>

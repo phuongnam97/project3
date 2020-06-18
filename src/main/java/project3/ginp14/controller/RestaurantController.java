@@ -1,7 +1,9 @@
 package project3.ginp14.controller;
 
 import com.cloudinary.utils.ObjectUtils;
+import com.sun.java.accessibility.util.EventID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,16 +11,22 @@ import org.springframework.web.multipart.MultipartFile;
 import project3.ginp14.config.CloudinaryConfig;
 import project3.ginp14.dao.UserDao;
 import project3.ginp14.entity.*;
+import project3.ginp14.entity.enumObj.ItemStatus;
+import project3.ginp14.entity.schema.*;
 import project3.ginp14.service.*;
+import sun.security.krb5.internal.Ticket;
 
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.util.*;
 
 @Controller
 @RequestMapping("/restaurant")
 public class RestaurantController {
+
+    private DecimalFormat decimalFormat = new DecimalFormat("#,###");
+
     @Autowired
     private RestaurantService restaurantService;
 
@@ -42,6 +50,9 @@ public class RestaurantController {
 
     @Autowired
     private CloudinaryConfig cloudinary;
+
+    @Autowired
+    private ItemService itemService;
 
     @Autowired
     private OrderService orderService;
@@ -137,11 +148,20 @@ public class RestaurantController {
         booking.setBookingDatetime(booking.getBookingDatetime().replace(" ", "T"));
         List<Dish> listDish = dishService.findByRestaurant(booking.getRestaurant());
         List<Order> listOrder = orderService.findByBooking(booking);
+        List<Table> listTableAvaib = tableService.findEmptyTableByRestaurant(restaurantService.findByUserId(user.getId()), booking.getBookingDatetime(), booking.getQuantity());
+        listTableAvaib.add(booking.getTable());
+        listTableAvaib.sort((o1, o2) -> {
+            if (o1.getId() > o2.getId()) {
+                return 1;
+            } else if (o1.getId() < o2.getId()) return -1;
+            else return 0;
+        });
         if (isBookingOfCurrentRestaurant(user, id)) {
             model.addAttribute("obj", booking);
             model.addAttribute("userFullName", user.getFullname());
             model.addAttribute("listDish", listDish);
-            model.addAttribute("listItem", listOrder);
+            model.addAttribute("listOrder", listOrder);
+            model.addAttribute("listTable", listTableAvaib);
             return "views/restaurant/booking/edit_booking";
         } else return "redirect:/restaurant/booking";
     }
@@ -152,7 +172,7 @@ public class RestaurantController {
         Restaurant restaurant = restaurantService.findByUserId(user.getId());
         if (isBookingOfCurrentRestaurant(user, booking.getId())) {
             booking.setBookingDatetime(booking.getBookingDatetime().replace("T", " "));
-            booking.setCheckStatus(1);
+
             bookingService.save(booking);
             return "redirect:/restaurant/booking";
         }
@@ -395,13 +415,13 @@ public class RestaurantController {
     }
 
     @GetMapping("/order/create")
-    public String createOrders(@RequestParam("listId") String listId, @RequestParam("bookingId") int bookingId){
+    public String createOrders(@RequestParam("listId") String listId, @RequestParam("bookingId") int bookingId) {
         System.out.println("========================");
         System.out.println(listId);
         System.out.println("========================");
         String[] listDishId = listId.split(",");
         try {
-            for (int i = 0; i < listDishId.length - 1; i++) {
+            for (int i = 0; i < listDishId.length; i++) {
                 Booking booking = bookingService.findById(bookingId);
                 Dish dish = dishService.findById(Integer.valueOf(listDishId[i]));
                 Order order = orderService.findByBookingAndDish(booking, dish);
@@ -410,13 +430,301 @@ public class RestaurantController {
                     order.setBooking(booking);
                     order.setDish(dish);
                     order.setQuantity(1);
-                    orderService.create(order);
+                    order.setUpdateDate(new Date());
+                    order.setCreateDate(new Date());
+                    orderService.save(order);
+
+                    Item item = new Item(booking, dish, ItemStatus.PENDING);
+                    itemService.save(item);
                 }
+
             }
-            List<Order> listOrder = orderService.findByBooking(bookingService.findById(bookingId));
-        } catch (Exception ex){
+            return "redirect:/restaurant/booking/edit?id=" + bookingId + "#dish-item";
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return "";
+        return "redirect:/restaurant/booking/edit?id=" + bookingId + "#dish-item";
+    }
+
+    @PostMapping("/order/update")
+    public @ResponseBody
+    List<Order> editOrder(@RequestBody List<OrderUpdate> listOrderUpdate) {
+        List<Order> listOrder = new ArrayList<>();
+
+        for (OrderUpdate order : listOrderUpdate) {
+            Dish dish = dishService.findById(order.getDishId());
+            Order order1 = orderService.findById(order.getOrderId());
+            if (order1.getQuantity() < order.getQuantity()) {
+                // Tăng số lượng suất ăn
+                // Lưu thông tin mới với số lượng suất ăn lớn hơn
+                order1.setQuantity(order.getQuantity());
+                orderService.save(order1);
+
+                // Kiểm tra số suất đã có
+                List<Item> listCurrentItem = itemService.findByBookingAndDish(order1.getBooking(), dish);
+                int noCurrentItem = listCurrentItem.size();
+                if (noCurrentItem < order1.getQuantity()) {
+                    int itemNeeded = order1.getQuantity() - noCurrentItem;
+                    for (int i = 0; i < itemNeeded; i++) {
+                        Item item = new Item(order1.getBooking(), dish, ItemStatus.PENDING);
+                        itemService.save(item);
+                    }
+                }
+            }
+
+            if (order1.getQuantity() > order.getQuantity()) {
+                // Giảm số lượng suất ăn
+                // Kiểm tra số suất ăn Pending
+                List<Item> listCurrentPendingItem = itemService.findByBookingAndDishAndItemStatus(order1.getBooking(), dish, ItemStatus.PENDING);
+
+                int noItemNeedDelete = order1.getQuantity() - order.getQuantity();
+                // Trường hợp có pending đủ để xóa
+                if (listCurrentPendingItem.size() >= noItemNeedDelete) {
+                    for (int i = 0; i < noItemNeedDelete; i++) {
+                        Item item = listCurrentPendingItem.get(i);
+                        itemService.deleteById(item.getId());
+                    }
+                    order1.setQuantity(order.getQuantity());
+                    orderService.save(order1);
+                }
+                // trường hợp ko đủ
+                // xóa tất cả những item pending
+                // trả về số lượng đã xóa và chưa xóa được
+                if (listCurrentPendingItem.size() < noItemNeedDelete) {
+                    // số lượng đã xóa
+                    int noDeleted = listCurrentPendingItem.size();
+                    int noUnDeleted = noItemNeedDelete - noDeleted;
+                    for (Item item : listCurrentPendingItem) {
+                        itemService.deleteById(item.getId());
+                    }
+                    order1.setQuantity(order1.getQuantity() - noDeleted);
+                    orderService.save(order1);
+                }
+            }
+            listOrder.add(order1);
+        }
+        // Trả về message
+        return listOrder;
+    }
+
+    @PostMapping("/table/getListAvailable")
+    public @ResponseBody
+    List<Table> editOrder(@RequestBody BookingRequest bookingRequest, Principal principal) {
+        Restaurant restaurant = restaurantService.findByUserId(userDao.findByUsername(principal.getName()).getId());
+        List<Table> listTable = tableService.findEmptyTableByRestaurant(restaurant, bookingRequest.getBookingDateTime(), bookingRequest.getQuantity());
+        return listTable;
+    }
+
+    // Kitchen management
+    @GetMapping("/kitchen/list-items")
+    public String showListItems(Model model, Principal principal) {
+        Restaurant restaurant = restaurantService.findByUserId(userDao.findByUsername(principal.getName()).getId());
+        List<Item> listItemPending = itemService.findByItemStatusAndBooking_Restaurant(ItemStatus.PENDING, restaurant);
+        List<Item> listItemCooking = itemService.findByItemStatusAndBooking_Restaurant(ItemStatus.COOKING, restaurant);
+        List<Item> listItemFinish = itemService.findByItemStatusAndBooking_Restaurant(ItemStatus.FINISH, restaurant);
+
+        Collections.sort(listItemPending);
+        Collections.sort(listItemCooking);
+        Collections.sort(listItemFinish);
+        List<KitchenItem> listPending = convertToKitchenItemArray(listItemPending);
+        List<KitchenItem> listCooking = convertToKitchenItemArray(listItemCooking);
+        List<KitchenItem> listFinish = convertToKitchenItemArray(listItemFinish);
+
+        model.addAttribute("listItemPending", listPending);
+        model.addAttribute("listItemCooking", listCooking);
+        model.addAttribute("listItemFinish", listFinish);
+
+        return "views/restaurant/item/list_items";
+    }
+
+    public static List<KitchenItem> convertToKitchenItemArray(List<Item> listItem) {
+        List<KitchenItem> listKitchenItem = new ArrayList<>();
+        int count = 1;
+        if (listItem.size() > 1) {
+            for (int i = 0; i < listItem.size(); i++) {
+                if (i > 0) {
+                    if (listItem.get(i).getDish().getId() == listItem.get(i - 1).getDish().getId()) {
+                        count += 1;
+                    } else {
+                        KitchenItem kitchenItem = new KitchenItem(listItem.get(i - 1).getDish(), count);
+                        listKitchenItem.add(kitchenItem);
+                        count = 1;
+                    }
+                    if (i == listItem.size() - 1) {
+                        KitchenItem kitchenItem = new KitchenItem(listItem.get(i).getDish(), count);
+                        listKitchenItem.add(kitchenItem);
+                    }
+                }
+            }
+        }
+        if (listItem.size() == 1) {
+            KitchenItem kitchenItem = new KitchenItem(listItem.get(0).getDish(), 1);
+            listKitchenItem.add(kitchenItem);
+        }
+        return listKitchenItem;
+    }
+
+    @PostMapping("/kitchen/process-item")
+    public @ResponseBody
+    List<List<KitchenItem>> processItem(@RequestBody ProcessItemRequest request, Principal principal) {
+        List<List<KitchenItem>> listUpdate = new ArrayList<>();
+        Restaurant restaurant = restaurantService.findByUserId(userDao.findByUsername(principal.getName()).getId());
+        Dish dish = dishService.findById(request.getDishId());
+        ItemStatus itemStatus = ItemStatus.PENDING;
+        ItemStatus nextStatus = ItemStatus.COOKING;
+        if (request.getType().equals("cooking")) {
+            itemStatus = ItemStatus.COOKING;
+            nextStatus = ItemStatus.FINISH;
+        }
+        List<Item> listItem = itemService.findByItemStatusAndBooking_RestaurantAndDish(itemStatus, restaurant, dish);
+        for (int i = 0; i < request.getQuantity(); i++) {
+            Item item = listItem.get(i);
+            item.setItemStatus(nextStatus);
+            itemService.save(item);
+        }
+
+        listUpdate = getListKitchenItem(restaurant);
+        return listUpdate;
+    }
+
+    @PostMapping("/kitchen/create-ticket")
+    public @ResponseBody
+    List createNewTicket(Principal principal) {
+        Restaurant restaurant = restaurantService.findByUserId(userDao.findByUsername(principal.getName()).getId());
+        List<Item> listItemFinish = itemService.findByItemStatusAndBooking_RestaurantOrderById(ItemStatus.FINISH, restaurant);
+        List<Item> updatedItem = new ArrayList<>();
+        List response = new ArrayList();
+
+        if (listItemFinish.size() > 5) {
+            for (int i = 0; i < 5; i++) {
+                Item item = listItemFinish.get(i);
+                item.setItemStatus(ItemStatus.SERVED);
+                itemService.save(item);
+                updatedItem.add(item);
+            }
+        } else {
+            for (int i = 0; i < listItemFinish.size(); i++) {
+                Item item = listItemFinish.get(i);
+                item.setItemStatus(ItemStatus.SERVED);
+                itemService.save(item);
+                updatedItem.add(item);
+            }
+        }
+
+        updatedItem.sort((o1, o2) -> {
+            int t1 = (o1.getDish().getId() > o2.getDish().getId()) ? 1 : (o1.getDish().getId() == o2.getDish().getId()) ? 0 : -1;
+            int t2 = (o1.getBooking().getId() > o2.getBooking().getId()) ? 1 : (o1.getBooking().getId() == o2.getBooking().getId()) ? 0 : -1;
+            return (t2 > 0) ? t2 : t1;
+        });
+        List<List<KitchenItem>> listKitchenItem = getListKitchenItem(restaurant);
+        List<TicketDetail> listTicketDetail = getTicketDetail(updatedItem);
+        response.add(listTicketDetail);
+        response.add(listKitchenItem);
+        return response;
+    }
+
+    @PostMapping("/kitchen/update")
+    public @ResponseBody
+    List<List<KitchenItem>> updateItem(Principal principal) {
+        Restaurant restaurant = restaurantService.findByUserId(userDao.findByUsername(principal.getName()).getId());
+        List<List<KitchenItem>> listKitchenItem = getListKitchenItem(restaurant);
+
+        return listKitchenItem;
+    }
+
+    public List<List<KitchenItem>> getListKitchenItem(Restaurant restaurant) {
+        List<List<KitchenItem>> listKitchenItem = new ArrayList<>();
+
+        List<Item> listPending = itemService.findByItemStatusAndBooking_Restaurant(ItemStatus.PENDING, restaurant);
+        List<Item> listCooking = itemService.findByItemStatusAndBooking_Restaurant(ItemStatus.COOKING, restaurant);
+        List<Item> listFinish = itemService.findByItemStatusAndBooking_Restaurant(ItemStatus.FINISH, restaurant);
+
+        Collections.sort(listPending);
+        Collections.sort(listCooking);
+        Collections.sort(listFinish);
+
+        List<KitchenItem> list1 = convertToKitchenItemArray(listPending);
+        List<KitchenItem> list2 = convertToKitchenItemArray(listCooking);
+        List<KitchenItem> list3 = convertToKitchenItemArray(listFinish);
+
+        listKitchenItem.add(list1);
+        listKitchenItem.add(list2);
+        listKitchenItem.add(list3);
+        return listKitchenItem;
+    }
+
+    public List<TicketDetail> getTicketDetail(List<Item> listItems) {
+        List<TicketDetail> listTicketDetail = new ArrayList<>();
+        for (Item item : listItems) {
+            Booking booking = item.getBooking();
+            Dish dish = item.getDish();
+            int index = checkExistBooking(booking, listTicketDetail);
+            if (index >= 0) {
+                List<DishOrderServed> listDishOrderServed = listTicketDetail.get(index).getListDishOrderServed();
+                int index2 = checkExistDish(dish, listDishOrderServed);
+                if (index2 >= 0){
+                    listTicketDetail.get(index).getListDishOrderServed().get(index2).setQuantity(listTicketDetail.get(index).getListDishOrderServed().get(index2).getQuantity()+1);
+                } else {
+                    DishOrderServed dishOrderServed = new DishOrderServed(dish, 1);
+                    listTicketDetail.get(index).getListDishOrderServed().add(dishOrderServed);
+                }
+            } else {
+                TicketDetail ticketDetail = new TicketDetail();
+                List<DishOrderServed> listDishOrderServed = new ArrayList<>();
+                listDishOrderServed.add(new DishOrderServed(dish, 1));
+                ticketDetail.setBooking(booking);
+                ticketDetail.setListDishOrderServed(listDishOrderServed);
+                listTicketDetail.add(ticketDetail);
+            }
+        }
+        return listTicketDetail;
+    }
+
+    public int checkExistBooking(Booking booking, List<TicketDetail> listTicketDetail) {
+        for (int i = 0; i < listTicketDetail.size(); i++) {
+            if (listTicketDetail.get(i).getBooking() == booking) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int checkExistDish(Dish dish, List<DishOrderServed> listDistOrderServed){
+        for (int i = 0; i< listDistOrderServed.size(); i++){
+            if (listDistOrderServed.get(i).getDish() == dish){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // Xem trước thông tin thanh toán
+    @GetMapping("/payment")
+    public String showPayment(Model model, @RequestParam int bookingId){
+        Booking booking = bookingService.findById(bookingId);
+        // List order
+        List<Order> listOrder = orderService.findByBooking(booking);
+
+        int sum = 0;
+
+        for ( Order order: listOrder){
+            int price = order.getDish().getPrice();
+            int quantity = order.getQuantity();
+            sum += price*quantity;
+        }
+
+        int principalSum = sum;
+        int tax = sum*10/100;
+
+        sum += tax;
+
+        model.addAttribute("tax", decimalFormat.format((double)tax));
+        model.addAttribute("sum", decimalFormat.format((double) sum));
+        model.addAttribute("principalSum", decimalFormat.format((double)principalSum));
+        model.addAttribute("listOrder", listOrder);
+        model.addAttribute("booking", booking);
+        model.addAttribute("restaurant", booking.getRestaurant());
+
+        return "views/restaurant/payment/payment-view";
     }
 }

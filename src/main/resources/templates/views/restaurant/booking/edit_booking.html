@@ -10,12 +10,23 @@
 <div class="div-content" layout:fragment="content">
     <script>
         $(function () {
+            var url = window.location.href
+            var abc = url.split("#")[1];
+            if (abc == "dish-item") {
+                $("#customer-info").removeClass("active");
+                $("#dish-item").addClass("active");
+                $("#tab-choice-customer-info").removeClass("active");
+                $("#tab-choice-order-info").addClass("active");
+
+            }
+
             $("#booking-management").addClass("menu-open");
         })
 
         $('#btn-add-dish').click(function () {
             $('#dish-table').children('tbody').children('tr').children('td').children('div').children('input')
         })
+
     </script>
     <section class="content-header">
         <div class="container-fluid">
@@ -25,8 +36,8 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-order"><a href="#">Trang chủ</a></li>
-                        <li class="breadcrumb-order active">Sửa bàn đặt</li>
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Sửa bàn đặt</li>
                     </ol>
                 </div>
             </div>
@@ -38,10 +49,12 @@
                 <div class="card-body">
                     <div class="card-header p-2">
                         <ul class="nav nav-pills">
-                            <li class="nav-order"><a class="nav-link active" href="#customer-info" data-toggle="tab">Thông
+                            <li class="nav-item"><a id="tab-choice-customer-info" class="nav-link active"
+                                                    href="#customer-info" data-toggle="tab">Thông
                                 tin
                                 khách hàng</a></li>
-                            <li class="nav-order"><a class="nav-link" href="#dish-order" data-toggle="tab">Gọi món</a>
+                            <li class="nav-item"><a id="tab-choice-order-info" class="nav-link" href="#dish-item"
+                                                    data-toggle="tab">Gọi món</a>
                             </li>
                         </ul>
                     </div>
@@ -60,20 +73,22 @@
                                                 <label for="guest_name">Tên khách hàng</label>
                                                 <input type="text" class="form-control" id="guest_name"
                                                        placeholder="Nhập tên khách hàng"
+                                                       pattern="[A-Za-z\s]{2,32}"
                                                        th:value="${obj.guestName}"
-                                                       th:field="*{guestName}">
+                                                       th:field="*{guestName}" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="guest_telephone">Số điện thoại</label>
                                                 <input type="text" class="form-control" id="guest_telephone"
                                                        placeholder="Nhập số điện thoại"
+                                                       pattern="(03|07|08|09|01[2|6|8|9])+([0-9]{8})"
                                                        th:value="${obj.guestTelephone}"
-                                                       th:field="*{guestTelephone}">
+                                                       th:field="*{guestTelephone}" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="person_no">Số lượng ghế</label>
-                                                <input type="number" class="form-control" id="person_no"
-                                                       th:value="${obj.quantity}" th:field="*{quantity}">
+                                                <input type="number" class="form-control" id="person_no" min="1"
+                                                       th:value="${obj.quantity}" th:field="*{quantity}" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="booking_detail">Yêu cầu chi tiết</label>
@@ -82,18 +97,28 @@
                                                           th:field="*{bookingDetail}"></textarea>
                                             </div>
                                             <div class="form-group">
-                                                <label>Thời gian</label>
+                                                <label for="bookingDatetime">Thời gian</label>
                                                 <div>
                                                     <div class="row">
                                                         <div class='col-sm-6'>
-                                                            <input type='datetime-local' class="form-control"
+                                                            <input type='datetime-local' class="form-control booking-datetime-class"
                                                                    th:value="${obj.bookingDatetime}"
-                                                                   th:field="*{bookingDatetime}"/>
+                                                                   th:field="*{bookingDatetime}" required/>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <input type="button" class="btn-confirm btn-primary" value="Xác nhận">
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
+                                            <div class="form-group">
+                                                <label for="table-choose-option">Chọn bàn</label>
+                                                <select class="form-control" id="table-choose-option" th:field="*{table}" required>
+                                                    <th:block th:each="table:${listTable}">
+                                                        <option th:value="${table.id}" th:text="${table.code}"></option>
+                                                    </th:block>
+                                                </select>
+                                            </div>
                                             <button type="submit" class="btn btn-primary">Sửa</button>
                                         </form>
                                     </div>
@@ -102,7 +127,7 @@
                         </div>
 
                         <!-- /.tab-pane -->
-                        <div class="tab-pane" id="dish-order">
+                        <div class="tab-pane" id="dish-item">
                             <!-- The timeline -->
                             <div class="row">
                                 <div class="col-12">
@@ -123,25 +148,31 @@
                                                 <th>Hành động</th>
                                             </tr>
                                             </thead>
-                                            <tbody>
-                                            <th:block th:if="${listOrder.size() != 0}" th:each="order:${listOrder}">
-                                                <tr>
-                                                    <td th:text="${order.id}"></td>
-                                                    <td th:text="${order.dish.name}"></td>
+                                            <tbody class="content-table">
+                                            <th:block th:if="${listOrder.size() != 0}" th:each="item:${listOrder}">
+                                                <tr class="order-row" th:id="${'row-' + item.id}">
+                                                    <td th:text="${item.id}"></td>
+                                                    <input type="hidden" th:id="${'item-dish-'+item.id}"
+                                                           th:value="${item.dish.id}">
+                                                    <td th:text="${item.dish.name}"></td>
                                                     <td>
-                                                        <img th:src="${order.dish.image}"
+                                                        <img th:src="${item.dish.image}"
                                                              style="width: 300px; height: 300px">
                                                     </td>
-                                                    <td th:text="${order.dish.price}"></td>
-                                                    <td style="width: 20%">
-                                                        <button type="button" class="btn btn-default"><i
+                                                    <td th:text="${item.dish.price}"></td>
+                                                    <td style="width: 10%">
+                                                        <button th:id="${'minus-' + item.id}" type="button"
+                                                                class="btn btn-default btn-minus"><i
                                                                 class="fa fa-minus"></i></button>
-                                                        <input type="number">
-                                                        <button type="button" class="btn btn-default"><i
+                                                        <input th:id="${'quantity-'+item.id}"
+                                                               th:value="${item.quantity}" type="number">
+                                                        <button th:id="${'plus-' + item.id}" type="button"
+                                                                class="btn btn-default btn-plus"><i
                                                                 class="fa fa-plus"></i></button>
                                                     </td>
                                                     <td><a href="#"><i class="fa fa-trash"> Xóa</i></a></td>
                                                 </tr>
+
                                             </th:block>
                                             <th:block th:if="${listOrder.size() == 0}">
                                                 <tr>
@@ -155,6 +186,9 @@
                                             </th:block>
                                             </tbody>
                                         </table>
+                                        <button th:if="${listOrder.size() != 0}" id="btn-save-order" type="button"
+                                                class="btn btn-default bg-gradient-success">Lưu
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -215,18 +249,98 @@
         <!-- /.modal-dialog -->
     </div>
 
-<script>
-    $('#choose-dish').click(function () {
-        var listDishId = [];
-        $('input:checkbox.form-check-input').each(function () {
-            if (this.checked){
-                listDishId.push(this.id.replace('dish-',''))
+    <script>
+        $('#choose-dish').click(function () {
+            var listDishId = [];
+            $('input:checkbox.form-check-input').each(function () {
+                if (this.checked) {
+                    listDishId.push(this.id.replace('dish-', ''))
+                }
+            })
+
+            console.log(listDishId.toString());
+            window.location.href = "http://localhost:8080/restaurant/order/create?listId=" + listDishId.toString() + "&bookingId=" + $('input:hidden#id').val()
+        })
+
+        $('.btn-minus').click(function () {
+            var id = this.id.replace("minus-", "");
+            var value = parseInt($('#quantity-' + id).val())
+            if (value > 0) {
+                $('#quantity-' + id).val(value - 1)
             }
         })
-        console.log(listDishId.toString());
-        window.location.href = "http://localhost:8080/restaurant/order/create?listId=" + listDishId.toString() + "&bookingId=" + $('input:hidden#id').val()
-    })
-</script>
+
+        $('.btn-plus').click(function () {
+            var id = this.id.replace("plus-", "");
+            var value = parseInt($('#quantity-' + id).val())
+            $('#quantity-' + id).val(value + 1)
+        })
+
+        $('#btn-save-order').click(function () {
+            var listOrder = [];
+            $('.order-row').each(function () {
+                var orderId = parseInt(this.id.replace("row-", ""))
+                var quantity = parseInt($('#quantity-' + orderId).val())
+                var dishId = parseInt($('#item-dish-' + orderId).val())
+                var order = {orderId: orderId, quantity: quantity, dishId: dishId}
+                listOrder.push(order)
+            })
+            console.log(listOrder)
+            $.ajax({
+                url: "http://localhost:8080/restaurant/order/update",
+                method: "POST",
+                data: JSON.stringify(listOrder),
+                contentType: "application/json",
+                dataType: "json",
+                success: function (data) {
+                    var htmlContent = ""
+                    for (i in data) {
+                        console.log(data[i])
+                        htmlContent += "<tr class='order-row' id='row-" + data[i].id + "'>"
+                        htmlContent += "<td>" + data[i].id + "</td>"
+                        htmlContent += "<input type='hidden' id='item-dish-" + data[i].id + "' value='" + data[i].dish.id + "'>"
+                        htmlContent += "<td>" + data[i].dish.name + "</td>"
+                        htmlContent += "<td><img src='" + data[i].dish.image + "' style='width: 300px; height: 300px'></td>"
+                        htmlContent += "<td>" + data[i].dish.price + "</td>"
+                        htmlContent += "<td style='width: 10%'>"
+                        htmlContent += "<button id='minus-" + data[i].id + "' type='button' class='btn btn-default btn-minus'>"
+                        htmlContent += "<i class='fa fa-minus'></i>"
+                        htmlContent += "</button>"
+                        htmlContent += "<input id='quantity-" + data[i].id + "' value='" + data[i].quantity + "' type='number'>"
+                        htmlContent += "<button id='plus-" + data[i].id + "' type='button' class='btn btn-default btn-plus'>"
+                        htmlContent += "<i class='fa fa-plus'></i>"
+                        htmlContent += "</button>"
+                        htmlContent += "</td>"
+                        htmlContent += "<td><a href='#'><i class='fa fa-trash'>Xóa</i></a></td>"
+                        htmlContent += "</tr>"
+                    }
+                }
+            })
+        })
+
+        $(".btn-confirm").click(function () {
+            var quantity = parseInt($('#person_no').val());
+            var bookingDateTime = $(".booking-datetime-class").val().replace("T", " ");
+            console.log(quantity)
+            console.log(bookingDateTime)
+            var bookingRequest = {quantity: quantity, bookingDateTime: bookingDateTime}
+            $.ajax({
+                url: "http://localhost:8080/restaurant/table/getListAvailable",
+                method: "POST",
+                data: JSON.stringify(bookingRequest),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    var contentHTML = ""
+                    for (i in data) {
+                        console.log(data[i])
+                        contentHTML += "<option value='" + data[i].id + "'>" + data[i].code + "</option>"
+                    }
+                    $('#table-choose-option').html(contentHTML)
+                }
+            })
+        })
+    </script>
 </div>
 </body>
 </html>

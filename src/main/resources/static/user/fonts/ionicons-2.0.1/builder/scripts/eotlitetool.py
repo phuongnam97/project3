@@ -163,8 +163,8 @@
 # are the 'Flags' field and the root string name field.  The root string
 # is a set of names indicating domains for which the font data can be
 # used.  A null root string implies the font data can be used anywhere.
-# The EOT header is in little-endian byte order but the font data remains
-# in big-endian order as specified by the OpenType spec.
+# The EOT header is in little-endian byte item but the font data remains
+# in big-endian item as specified by the OpenType spec.
 # 
 # Overall structure:
 # 
@@ -235,7 +235,7 @@ class EOT:
     EOT_VERSION = 0x00020001
     EOT_MAGIC_NUMBER = 0x504c
     EOT_DEFAULT_CHARSET = 0x01
-    EOT_FAMILY_NAME_INDEX = 0    # order of names in variable portion of EOT header
+    EOT_FAMILY_NAME_INDEX = 0    # item of names in variable portion of EOT header
     EOT_STYLE_NAME_INDEX = 1
     EOT_VERSION_NAME_INDEX = 2
     EOT_FULL_NAME_INDEX = 3

@@ -8,24 +8,29 @@
 <body>
 <section layout:fragment="content" class="bgwhite p-t-55 p-b-65 slide1">
     <div class="container">
-        <form th:object="${obj}" th:action="@{/booking}" method="post">
+        <form th:object="${obj}" th:action="@{/booking}" id="booking" method="post">
             <input class="s-text7 bg6 w-full p-b-5" type="hidden" th:value="${restaurant.id}" name="restaurant" id="restaurant">
             <h3 class="m-text26 p-b-36 p-t-15">
                 Vui lòng nhập thông tin để đặt bàn
             </h3>
 
-            Số lượng chỗ :
-            <div class="bo4 of-hidden size15 m-b-20">
-                <input class="sizefull s-text7 p-l-22 p-r-22" type="number" name="name" th:value="'1'" th:field="*{quantity}">
-            </div>
+            <label for="quantity">Số lượng chỗ :</label>
 
-            Yêu cầu chi tiết :
-            <textarea class="dis-block s-text7 size20 bo4 p-l-22 p-r-22 p-t-13 m-b-20" name="message" placeholder="Yêu cầu" th:field="*{bookingDetail}"></textarea>
-
-            Thời gian đặt :
             <div class="bo4 of-hidden size15 m-b-20">
-                <input type='datetime-local' class="form-control" th:field="*{bookingDatetime}"/>
+                <input class="sizefull s-text7 p-l-22 p-r-22" type="number" th:value="'1'" min="1" th:field="*{quantity}" required>
             </div>
+            <p style="display: none;" id="notice-qty">Trường bắt buộc</p>
+
+            <label for="message">Yêu cầu chi tiết :</label>
+
+            <textarea class="dis-block s-text7 size20 bo4 p-l-22 p-r-22 p-t-13 m-b-20" name="message" id="message" placeholder="Yêu cầu" th:field="*{bookingDetail}"></textarea>
+
+            <label for="bookingDatetime">Thời gian đặt :</label>
+
+            <div class="bo4 of-hidden size15 m-b-20">
+                <input type='datetime-local' class="form-control" th:field="*{bookingDatetime}" required/>
+            </div>
+            <p style="display: none;" id="notice-datetime">Trường bắt buộc</p>
             <h5 class="m-text26 p-b-36 p-t-15 text-danger">Tên và số điện thoại liên lạc của quý khách sẽ được lấy từ thông tin cá nhân đã đăng ký</h5>
 
             <div class="w-size25" style="vertical-align: middle;">

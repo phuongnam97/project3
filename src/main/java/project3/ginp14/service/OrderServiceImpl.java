@@ -10,24 +10,27 @@ import project3.ginp14.entity.Order;
 import java.util.List;
 
 @Service
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl implements OrderService{
     @Autowired
     private OrderDao orderDao;
 
     @Override
     public List<Order> findByBooking(Booking booking) {
-        List<Order> listOrder = orderDao.findByBooking(booking);
-        return listOrder;
+        return orderDao.findByBooking(booking);
     }
 
     @Override
     public Order findByBookingAndDish(Booking booking, Dish dish) {
-        Order order = orderDao.findByBookingAndDish(booking, dish);
-        return order;
+        return orderDao.findByBookingAndDish(booking, dish);
     }
 
     @Override
-    public void create(Order order) {
+    public Order findById(int id) {
+        return orderDao.findById(id);
+    }
+
+    @Override
+    public void save(Order order) {
         orderDao.save(order);
     }
 }

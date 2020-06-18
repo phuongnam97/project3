@@ -31,8 +31,8 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-order"><a href="#">Trang chủ</a></li>
-                        <li class="breadcrumb-order active">Danh sách đặt bàn</li>
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Danh sách đặt bàn</li>
                     </ol>
                 </div>
             </div>
@@ -96,6 +96,10 @@
                                             <a href="#" class="delete-button delete-a-hover" th:id="${booking.id}"
                                                onclick="checkDelete(this.id)" style="color: red;">
                                                 <i class="fas fa-trash-alt">Xóa</i>
+                                            </a>
+                                            |
+                                            <a th:if="${booking.verifyStatus == 2}" th:href="@{/restaurant/payment(bookingId=${booking.id})}">
+                                                <i class="fas fa-edit">Thanh toán</i>
                                             </a>
                                         </td>
 
